@@ -1,0 +1,37 @@
+
+.bookdes{
+    width: 80%;
+    height: auto;
+    padding: 20px;
+    display: flex;  
+    align-items: center;
+    justify-content:space-around;
+   
+}
+
+.bookdes .bookdes_image img{
+    width: 400px;
+   
+}
+
+.bookdes .bookdes_tag h1 h2{
+    
+    position: relative;
+   
+}
+
+.bookdes .bookdes_tag p{
+    line-height: 30px;
+    width: 500px;
+    text-align: justify;
+    margin-bottom: 15px;
+}
+
+.bookdes .bookdes_tag .book-des-btn{
+    padding: 10px 20px;
+    background: #089da1;
+    color: #fff;
+    text-decoration: none;
+    position: relative;
+    top: 50px;
+}

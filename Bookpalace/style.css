@@ -1,0 +1,258 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+section{
+    width: 100%;
+    height: 88vh;
+    background-image: url(photos/bg.png);
+    background-size: cover;
+    background-position: center;
+}
+
+section nav{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 0 10px #089da1;
+    background: #fff;
+    position: fixed;
+    left: 0;
+    z-index: 100;
+}
+
+section nav .logo img{
+    width: 100px;
+    cursor: pointer;
+    margin: 8px 0;
+}
+
+section nav ul{
+    list-style: none;
+    justify-content: right;
+}
+
+section nav li{
+    display: inline-block;
+    padding: 0 10px;
+}
+
+section nav li a{
+    text-decoration: none;
+    color: #000;
+}
+
+section nav li a:hover{
+    color: #089da1;
+}
+
+section nav .social_icon i{
+    margin: 0 5px;
+    font-size: 18px;
+}
+
+section nav .social_icon i:hover{
+    color: #089da1;
+    cursor: pointer;
+}
+
+section .main{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: relative;
+    top: 10%;
+}
+
+section .main h1{
+    position: relative;
+    font-size: 55px;
+    top: 80px;
+    left: 25px;
+}
+
+section .main h1 span{
+    color: #089da1;
+}
+
+section .main p{
+    width: 650px;
+    text-align: justify;
+    line-height: 22px;
+    position: relative;
+    top: 125px;
+    left: 25px;
+}
+
+section .main .main_tag .main_btn{
+    background: #089da1;
+    padding: 10px 20px;
+    position: relative;
+    top: 200px;
+    left: 25px;
+    color: #fff;
+    text-decoration: none;
+}
+section .main .main_img img{
+    width: 700px;
+    position: relative;
+    top: 90px;
+    right: 30px;    
+}
+
+        .main_img img {
+            width: 100%;
+            height: auto;
+            transition: transform 1s ease;
+        }
+
+        .main_img:hover img {
+            transform: scale(1.1);
+        }
+
+
+/* best-seller */
+.best-seller {
+    width: 300px;
+    height: 300px;
+    border-radius: 20px;
+    /* background: #f5f5f5; */
+    position: relative;
+     overflow: visible;
+    display: inline-flex;
+    padding: 0 60px;
+    
+   }
+   
+   .best-seller-details {
+    color: black;
+    height: 300px;
+    gap: .5em;
+    display: grid;
+    place-content: center;
+
+   }
+   
+  .btn-book {
+    margin:0 80vh;
+    background-color: #089da1;
+    width: 150px;
+    height: 50px;
+    border-radius: 30px;
+   
+  }
+     .btn-book a{
+        text-decoration: none;
+        color: #fff;
+        text-align: center;
+     }  
+       
+
+
+/*Banner*/
+
+.banner{
+    width: 100%;
+    height: 50vh;
+    background-image: url(image/banner.jpg);
+    background-size: cover;
+    background-position: center;
+}
+
+.banner .banner_btn{
+    padding: 8px 20px;
+    background: #089da1;
+    text-decoration: none;
+    color: #fff;
+    position: relative;
+    top: 70%;
+    left: 7%;
+}
+
+
+/* books */
+.stand{
+    width: 400px;
+    height: 200px;
+    display: inline-block;
+    overflow: visible;
+    }
+
+    .stand a {       
+        text-align: center;
+        display: block;
+        text-decoration: none;
+        color: #089da1;
+        /* width: 200px; */
+        margin: auto;
+      
+    }
+
+
+/* service */
+.card {
+    position: relative;
+    width: 400px;
+    height: 250px;
+    background-color: #fff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    perspective: 1000px;
+    box-shadow: -15px -15px 0 5px #ffffff80;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-left: 30px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-color: white;
+  }
+  
+  .wh-card{
+    display: inline-flex;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px #089da1;;
+  }
+  
+  .card__content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #88dde0;
+    transform: rotateX(-90deg);
+    transform-origin: bottom;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .card:hover .card__content {
+    transform: rotateX(0deg);
+  }
+  
+  .card__title {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+    font-weight: 700;
+  }
+  
+  
+  
+  .card__description {
+    margin: 10px 0 0;
+    font-size: 14px;
+    color: #000;
+    line-height: 1.3;
+  }
+  

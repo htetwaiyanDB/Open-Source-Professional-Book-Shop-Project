@@ -1,13 +1,17 @@
 <?php
-session_start();
-include 'function.php';
-include 'connect.php';
-if(isset($_GET['action'])&& $_GET['action']=='edit')
+require_once __DIR__ . '/connect.php';
+require_admin();
+
+
+require_once __DIR__ . '/function.php';
+
+if (isset($_GET['pid']) || isset($_POST['pid']))
 {
-    $pid=$_GET['pid'];
-    $query="Select * from products where productid='$pid'";
-    $go_query=mysqli_query($connection,$query);
-    while($row=mysqli_fetch_array($go_query))
+    $pid = (int) ($_POST['pid'] ?? $_GET['pid'] ?? 0);
+    $query="Select * from products where productid=?";
+    $go_query=db_query($connection,$query, [(int) $pid]);
+    if (db_num_rows($go_query) === 0) { http_response_code(404); exit('Book not found.'); }
+    while($row=db_fetch_array($go_query))
     {
         $productid=$row['productid'];
         $productname=$row['productname'];
@@ -15,12 +19,14 @@ if(isset($_GET['action'])&& $_GET['action']=='edit')
         $product_cat_id=$row['categoryid'];
         $description=$row['description'];
         $price=$row['price'];
-        $qty=$row['Qty'];
+        $qty=$row['qty'];
         $photo=$row['photo'];
     }
 }
+if (!isset($productid)) { redirect('productlist.php'); }
 if(isset($_POST['btnupdateproduct']))
 {
+    verify_csrf();
     update_product();
 }
 ?>
@@ -47,7 +53,7 @@ if(isset($_POST['btnupdateproduct']))
                 <?php
                     if(isset($_SESSION['admin']))
                     {
-                        echo $_SESSION['admin'];
+                        echo e($_SESSION['admin']);
                     }
                     else
                     {
@@ -65,9 +71,10 @@ if(isset($_POST['btnupdateproduct']))
             </div>
             <div class="card-body">
                 <form action="" method="post" enctype="multipart/form-data">
+<?php echo csrf_field(); ?>
                     <div class="mb-3">
                         <label for="" class="form-label">Product Name</label>
-                        <input type="text" name="productname" class="form-control" value="<?php echo $productname ?>">
+                        <input type="text" name="productname" class="form-control" value="<?php echo e($productname); ?>">
                     </div>
                     <div class="mb-3">
                         <label for="" class="form-label">Author Name</label>
@@ -75,19 +82,19 @@ if(isset($_POST['btnupdateproduct']))
                             <option value="">-----Select One-----</option>
                             <?php
                             $query="Select * from author";
-                            $go_query=mysqli_query($connection,$query);
-                            while($row=mysqli_fetch_array($go_query))
+                            $go_query=db_query($connection,$query);
+                            while($row=db_fetch_array($go_query))
                             
                             {
                                 $authorid=$row['authorid'];
                                 $authorname=$row['authorname'];
                                 if($product_author_id==$authorid)
                                 {
-                                    echo "<option value={$authorid} selected>{$authorname}</option>";
+                                    echo "<option value=" . e($authorid) . " selected>" . e($authorname) . "</option>";
                                 }
                                 else
                                 {
-                                    echo "<option value={$authorid}>{$authorname}</option>";
+                                    echo "<option value=" . e($authorid) . ">" . e($authorname) . "</option>";
                                 }
                             }
                             ?>
@@ -99,19 +106,19 @@ if(isset($_POST['btnupdateproduct']))
                             <option value="">-----Select One-----</option>
                             <?php
                             $query="Select * from categorys";
-                            $go_query=mysqli_query($connection,$query);
-                            while($row=mysqli_fetch_array($go_query))
+                            $go_query=db_query($connection,$query);
+                            while($row=db_fetch_array($go_query))
                             
                             {
                                 $catid=$row['catid'];
                                 $catname=$row['catname'];
                                 if($product_cat_id==$catid)
                                 {
-                                    echo "<option value={$catid} selected>{$catname}</option>";
+                                    echo "<option value=" . e($catid) . " selected>" . e($catname) . "</option>";
                                 }
                                 else
                                 {
-                                    echo "<option value={$catid}>{$catname}</option>";
+                                    echo "<option value=" . e($catid) . ">" . e($catname) . "</option>";
                                 }
                             }
                             ?>
@@ -120,24 +127,24 @@ if(isset($_POST['btnupdateproduct']))
                     
                     <div class="mb-3">
                         <label for="" class="form-label">Description</label>
-                        <input type="text" name="description" class="form-control" value="<?php echo $description ?> " >
+                        <input type="text" name="description" class="form-control" value="<?php echo e($description); ?> " >
                      </div>
                     <div class="mb-3">
                         <label for="" class="form-label">Price</label>
-                        <input type="text" name="price" class="form-control" value="<?php echo $price ?>">
+                        <input type="text" name="price" class="form-control" value="<?php echo e($price); ?>">
                     </div>
                     <div class="mb-3">
                         <label for="" class="form-label">Quantity</label>
-                        <input type="text" name="qty" class="form-control" value="<?php echo $qty ?>">
+                        <input type="text" name="qty" class="form-control" value="<?php echo e($qty); ?>">
                     </div>
                     <div class="mb-3">
                     <label for="" class="form-label">File Input</label>
                         <input type="file" name="photo" id="" class="form-control" 
                         value="<?php echo $photo ?>">
-                        <img src="../photos/<?php echo $photo ?>" width="100" height="100" alt="" loading="lazy" decoding="async">
+                        <img src="../Photos/<?php echo e($photo) ?>" width="100" height="100" alt="" loading="lazy" decoding="async">
                     </div>
                     <div class="mb-3 d-grid">
-                        <input type="submit" value="Update Book" name="btnupdateproduct" class="btn btn-outline-info">
+                        <input type="hidden" name="pid" value="<?php echo (int) $productid; ?>"><input type="submit" value="Update Book" name="btnupdateproduct" class="btn btn-outline-info">
                     </div>
                     
 

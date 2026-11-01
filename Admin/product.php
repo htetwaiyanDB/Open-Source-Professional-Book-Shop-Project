@@ -1,7 +1,7 @@
 <?php
-session_start();
-include 'connect.php';
-include 'function.php';
+require_once __DIR__ . '/connect.php';
+require_admin();
+require_once __DIR__ . '/function.php';
 if (isset($_POST['btnaddproduct'])) {
     addproduct();
 }
@@ -33,6 +33,7 @@ if (isset($_POST['btnaddproduct'])) {
                 <div class="card-header text-center bg-light">Book Information</div>
                 <div class="card-body">
                     <form action="" method="post" enctype="multipart/form-data">
+<?php echo csrf_field(); ?>
                         <div class="mb-3">
                             <label class="form-label">Book Name</label>
                             <input type="text" name="txtproductname" class="form-control">
@@ -41,11 +42,10 @@ if (isset($_POST['btnaddproduct'])) {
                             <label class="form-label">Author</label>
                             <select name="author" class="form-select">
                                 <?php
-                                $query = "SELECT * FROM author";
-                                $go_query = mysqli_query($connection, $query);
-                                while ($row = mysqli_fetch_array($go_query)) {
-                                    $authorid = $row['authorid'];
-                                    $authorname = $row['authorname'];
+                                $authors = db_query($connection, 'SELECT authorid, authorname FROM author ORDER BY authorname');
+                                while ($row = db_fetch_assoc($authors)) {
+                                    $authorid = (int) $row['authorid'];
+                                    $authorname = e($row['authorname']);
                                     echo "<option value='{$authorid}'>{$authorname}</option>";
                                 }
                                 ?>
@@ -55,11 +55,10 @@ if (isset($_POST['btnaddproduct'])) {
                             <label class="form-label">Category</label>
                             <select name="category" class="form-select">
                                 <?php
-                                $query = "SELECT * FROM categorys";
-                                $go_query = mysqli_query($connection, $query);
-                                while ($row = mysqli_fetch_array($go_query)) {
-                                    $catid = $row['catid'];
-                                    $catname = $row['catname'];
+                                $categories = db_query($connection, 'SELECT catid, catname FROM categorys ORDER BY catname');
+                                while ($row = db_fetch_assoc($categories)) {
+                                    $catid = (int) $row['catid'];
+                                    $catname = e($row['catname']);
                                     echo "<option value='{$catid}'>{$catname}</option>";
                                 }
                                 ?>

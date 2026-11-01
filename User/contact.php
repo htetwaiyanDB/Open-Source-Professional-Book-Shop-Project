@@ -1,9 +1,12 @@
 <?php
-session_start();
-include '../Admin/connect.php';
-include 'userfunction.php';
+require_once dirname(__DIR__) . '/Admin/connect.php';
+
+
+
+require_once __DIR__ . '/userfunction.php';
 if(isset($_POST['btnaddfeedback']))
 {
+    verify_csrf();
     addfeedback();
 };
 ?>
@@ -72,7 +75,9 @@ if(isset($_POST['btnaddfeedback']))
         
         
         <div class="contact-form">
+          <?php echo render_flash(); ?>
           <form action="" method="post" id="contact-form">
+<?php echo csrf_field(); ?>
             <h2>Feedback us</h2>
             <div class="input-box">
             <label for="">Username</label>

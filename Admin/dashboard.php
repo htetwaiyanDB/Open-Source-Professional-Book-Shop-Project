@@ -1,17 +1,16 @@
 <?php
-session_start();
-include 'connect.php';
+require_once __DIR__ . '/connect.php';
+require_admin();
 
-$countResult = mysqli_query($connection, "
+$counts = db_fetch_assoc(db_query($connection, "
     SELECT
         (SELECT COUNT(*) FROM categorys) AS category_count,
         (SELECT COUNT(*) FROM author) AS author_count,
-        (SELECT COUNT(*) FROM user) AS user_count,
+        (SELECT COUNT(*) FROM users) AS user_count,
         (SELECT COUNT(*) FROM products) AS book_count,
         (SELECT COUNT(*) FROM orders) AS order_count,
         (SELECT COUNT(*) FROM feedback) AS feedback_count
-");
-$counts = mysqli_fetch_assoc($countResult);
+"));
 $categoryCount = (int) $counts['category_count'];
 $authorCount = (int) $counts['author_count'];
 $userCount = (int) $counts['user_count'];

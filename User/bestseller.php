@@ -1,11 +1,8 @@
 <?php
-            session_start();
-            include 'userfunction.php';
-            include '../Admin/connect.php';
+require_once dirname(__DIR__) . '/Admin/connect.php';
 
-            if ($connection->connect_error) {
-                die("Connection failed: " . $connection->connect_error);
-            }
+
+            require_once __DIR__ . '/userfunction.php';
             ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,7 +26,7 @@
                 <span class="text-danger">
                     <?php
                         if (!empty($_SESSION['user'])) {
-                                    echo $_SESSION['user'];
+                                    echo e($_SESSION['user']);
                         } else {
                                     $_SESSION['user'] = '';
                                      echo "";
@@ -46,33 +43,33 @@
           
             <?php 
             $sql = "SELECT * FROM products join author on products.authorid = author.authorid  WHERE description = 'Bestseller' ";
-            $result = $connection->query($sql);
+            $result = db_query($connection, $sql);
 
             $counter = 0;
 
-            if ($result->num_rows > 0) {
-                while ($out = mysqli_fetch_array($result)) {
+            if (db_num_rows($result) > 0) {
+                while ($out = db_fetch_array($result)) {
                     $product_id = $out['productid'];
                     $product_name = $out['productname'];
                     $authorname= $out['authorname'];
                     $price = $out['price'];
                     $photo = $out['photo'];
-                    $Qty = $out ['Qty'];
+                    $Qty = $out ['qty'];
                     ?>
                     <div class="col-md-3 mb-3">
                       <div class="card" style="border:none;">
-                        <a href="product_detail.php?id=<?php echo $product_id; ?>" class="ms-2 mt-3">
-                          <img src="../Photos/<?php echo $photo; ?>" class="card-img-top img-fluid" alt="<?php echo $product_name; ?>" loading="lazy" decoding="async">
+                        <a href="product_detail.php?id=<?php echo e($product_id); ?>" class="ms-2 mt-3">
+                          <img src="Photos/<?php echo e($photo); ?>" class="card-img-top img-fluid" alt="<?php echo e($product_name); ?>">
                         </a>
                         <div class="card-body">
-                            <h5 class="card-title"><?php echo $product_name; ?></h5>
-                            <p class="card-text" style="color:red;"><?php echo $authorname; ?></p>
-                            <p class="card-text"><?php echo $price; ?></p>
-                            <p class="card-text">Stocks <?php echo $Qty; ?></p>
+                            <h5 class="card-title"><?php echo e($product_name); ?></h5>
+                            <p class="card-text" style="color:red;"><?php echo e($authorname); ?></p>
+                            <p class="card-text"><?php echo e($price); ?></p>
+                            <p class="card-text">Stocks <?php echo e($Qty); ?></p>
                     <?php if($Qty==0){?>
-                      <a href="index.php" class="btn btn-danger">Out of stock</a>
+                      <button type="button" disabled class="btn btn-danger">Out of stock</button>
                     <?php } else { ?>
-                      <a href="addtocart.php?id=<?php echo $product_id; ?>" class="btn btn-primary">Add to Cart</a>
+                      <form action="addtocart.php" method="post"><?php echo csrf_field(); ?><input type="hidden" name="id" value="<?php echo e($product_id); ?>"><button type="submit" class="btn btn-primary">Add to Cart</button></form>
                     <?php } ?>
                   </div>
                       </div>
@@ -84,7 +81,7 @@
                 echo "<div class='col-12'><p>No Books are found.</p></div>";
             }
 
-            $connection->close();
+            
             ?>
         </div>
     </div>

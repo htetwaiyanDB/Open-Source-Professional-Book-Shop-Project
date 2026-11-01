@@ -1,7 +1,7 @@
 <?php
+require_once dirname(__DIR__) . '/Admin/connect.php';
+require_once __DIR__ . '/userfunction.php';
 if (isset($_POST['register'])) {
-    require_once '../Admin/connect.php';
-    require_once 'userfunction.php';
     $user_name = $_POST['username'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirmpassword'];
@@ -111,6 +111,7 @@ if (isset($_POST['register'])) {
             </div>
 
             <form action="" method="post" class="auth-form auth-form--register">
+<?php echo csrf_field(); echo render_flash(); ?>
                 <div class="auth-grid">
                     <label class="auth-field">
                         <span>Username</span>

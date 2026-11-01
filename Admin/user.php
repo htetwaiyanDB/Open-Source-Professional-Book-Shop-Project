@@ -1,7 +1,7 @@
 <?php
-session_start();
-include 'connect.php';
-include 'function.php';
+require_once __DIR__ . '/connect.php';
+require_admin();
+require_once __DIR__ . '/function.php';
 if (isset($_POST['btnadduser'])) {
     adduser();
 }
@@ -33,6 +33,7 @@ if (isset($_POST['btnadduser'])) {
                 <div class="card-header text-center bg-light">Create User Account</div>
                 <div class="card-body">
                     <form method="post">
+<?php echo csrf_field(); echo render_flash(); ?>
                         <div class="mb-3">
                             <label class="form-label">Username</label>
                             <input type="text" name="username" class="form-control" required>

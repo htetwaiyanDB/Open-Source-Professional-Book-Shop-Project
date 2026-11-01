@@ -1,266 +1,125 @@
 <?php
-function adduser()
+require_once __DIR__ . '/connect.php';
+
+function admin_login(): void { authenticate_user('admin'); }
+function admin_mutation(): void { require_admin(); verify_csrf(); }
+function positive_id($value): int
 {
-    global $connection;
-    $uname=$_POST['username'];
-    $email=$_POST['email'];
-    $password=$_POST['password'];
-    $cpass=$_POST['cpassword'];
-    $usertype=$_POST['role'];
-      if($password!=$cpass)
-      {
-        echo"<script>window.alert('Password and comfrim password are must be same')</script>";
-      }
-      else if($password!="" && $uname!="")
-       {
-           $query="select * from user where username='$uname' and password=md5('$password')";
-           $ch_query=mysqli_query($connection,$query);
-           $count=mysqli_num_rows($ch_query);
-             if($count>0)
-             {
-                echo"<script>window.alert('This is already exist')</script>";
-             }
-             else
-             {
-                $hashvalue=md5($password);            
-                $query="insert into user(username,email,password,role) values('$uname','$email','$hashvalue','$usertype')";
-                $go_query=mysqli_query($connection,$query);
-                if(!$go_query)
-                    {
-                        die("QUERY FAILED".mysqli_error());
-                    }
-                 header("location:userlist.php");
-             }
-       }
+    if (!ctype_digit((string) $value) || (int) $value < 1) {
+        return 0;
     }
-    function deluser()
-    {
-      global $connection;
-      $userid=$_GET['uid'];
-      $query="Delete from user where userid='$userid'";
-      $go_query=mysqli_query($connection,$query);
-      header("location:userlist.php");
-    }
-    function addcat()
-    {
-      global $connection;
-      $catname=$_POST['catname'];
-
-      if(empty($catname))
-      {
-        echo '<script>window.alert("Please Enter Category Name")</script>';
-      }
-      else
-      {
-        $query="select * from categorys where catname='$catname'";
-           $ch_query=mysqli_query($connection,$query);
-           $count=mysqli_num_rows($ch_query);
-             if($count>0)
-             {
-                echo"<script>window.alert('This is already exist')</script>";
-             }
-             else
-             {
-                            
-                $query="insert into categorys(catname) values('$catname')";
-                $go_query=mysqli_query($connection,$query);
-                if(!$go_query)
-                    {
-                        die("QUERY FAILED".mysqli_error());
-                    }
-                 header("location:category.php");
-             }
-
-      }
-    }
-    function delcat()
-    {
-      global $connection;
-      $catid=$_GET['cid'];
-      $query="Delete from categorys where catid='$catid'";
-      $go_query=mysqli_query($connection,$query);
-      header("location:category.php");
-    }
-    function updatecat()
-    {
-    global $connection;
-    $catname=$_POST['updatecategory'];
-    $catid=$_GET['cid'];
-    $query="update categorys set catname='$catname' where catid='$catid'";
-    $go_query=mysqli_query($connection,$query);
-    if(!$go_query)
-    {
-        die("Query Failed".mysqli_error($connection));
-    }
-    header("location:category.php");
-
-    }
-
-function addproduct()
-{
-    global $connection;
-    $productname=$_POST['txtproductname'];//textbox name
-    $categoryid=$_POST['category'];//select name
-    $authorid=$_POST['author'];//select name
-    $description=$_POST['desc'];//select name
-    $price=$_POST['price'];//textbox name
-    $quantity=$_POST['qty'];//textbox name
-    $photo=$_FILES['photo']['name'];//file name
-    if(is_numeric($price)==false)
-    {
-        echo "<script>window.alert('Please Enter Price is numeric value')</script>";
-    }
-    elseif(is_numeric($quantity)==false)
-    {
-        echo "<script>window.alert('Please Enter Product Quantity is numeric value')</script>";
-    }
-    elseif($photo=="")
-    {
-        echo "<script>window.alert('Choose Product Images')</script>";
-    }
-    elseif($productname!="" && $photo!="")
-    {
-        $query="Select * from products where productname='$productname'";
-        $ch_query=mysqli_query($connection,$query);
-        $count=mysqli_num_rows($ch_query);
-        if($count>0)
-        {
-            echo"<script>window.alert('This Product is already exists')</script>";
-        }
-        else
-        {
-            $query="insert into products(productname,categoryid,authorid,price,Qty,photo,description) values('$productname','$categoryid','$authorid','$price','$quantity','$photo','$description')";
-            $go_query=mysqli_query($connection,$query);
-            if(!$go_query)
-            {
-                die("QUERY FAILED".mysqli_error($connection));
-            }
-            else
-            {
-                move_uploaded_file($_FILES['photo']['tmp_name'],'../photos/'.$photo);
-                header("location:productlist.php");
-            }
-        }
-    }
+    return (int) $value;
 }
-
-function del_product()
+function adduser(): void
 {
     global $connection;
-    $pid=$_GET['pid'];
-    $query="Delete from products where productid='$pid' ";
-    $go_query=mysqli_query($connection,$query);
-    header("location:productlist.php");
+    admin_mutation();
+    $password = (string) ($_POST['password'] ?? '');
+    $confirm = (string) ($_POST['cpassword'] ?? $_POST['confirmpassword'] ?? '');
+    $email = trim((string) ($_POST['email'] ?? ''));
+    if (strlen($password) < 12 || strlen($password) > 72 || $password !== $confirm || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        flash_error('Enter a valid email and matching passwords of 12-72 bytes.'); return;
+    }
+    db_scalar($connection, 'SELECT admin_create_user(?, ?, ?, ?, ?, ?)', [trim((string) ($_POST['username'] ?? '')),
+        password_hash($password, PASSWORD_DEFAULT), $email, trim((string) ($_POST['phone'] ?? '')),
+        trim((string) ($_POST['address'] ?? '')), (string) ($_POST['role'] ?? $_POST['usertype'] ?? 'user')]);
+    redirect('userlist.php');
 }
-function update_product()
+function deluser(): void
 {
     global $connection;
-    $pid=$_GET['pid'];
-    $productname=$_POST['productname'];
-    $categoryid=$_POST['category'];
-    $authorid=$_POST['author'];
-    $description=$_POST['description'];
-    $price=$_POST['price'];
-    $quantity=$_POST['qty'];
-    $photo=$_FILES['photo']['name'];
-    if(!$photo)
-    {
-        $query="update products set productname='$productname',categoryid='$categoryid',authorid='$authorid',description='$description',price='$price',qty='$quantity' where productid='$pid'";
-    }
-    else
-    {
-        $query="update products set productname='$productname',categoryid='$categoryid',authorid='$authorid',description='$description',price='$price',qty='$quantity',photo='$photo' where productid='$pid'";
-    }
-    $go_query=mysqli_query($connection,$query);
-    if(!$go_query)
-    {
-        die("QUERY FAILED".mysqli_error($connection));
-    }
-    else
-    {
-        move_uploaded_file($_FILES['photos']['tmp_name'],'../Photo/'.$photo);
-    }
-    header("location:productlist.php");
+    admin_mutation();
+    db_scalar($connection, 'SELECT admin_delete_user(?)', [positive_id($_POST['uid'] ?? '')]);
+    redirect('userlist.php');
 }
-
-function addauthor()
-    {
-      global $connection;
-      $authorname=$_POST['authorname'];
-
-      if(empty($authorname))
-      {
-        echo '<script>window.alert("Please Enter Author Name")</script>';
-      }
-      else
-      {
-        $query="select * from author where authorname='$authorname'";
-           $ch_query=mysqli_query($connection,$query);
-           $count=mysqli_num_rows($ch_query);
-             if($count>0)
-             {
-                echo"<script>window.alert('This is already exist')</script>";
-             }
-             else
-             {
-                            
-                $query="insert into author(authorname) values('$authorname')";
-                $go_query=mysqli_query($connection,$query);
-                if(!$go_query)
-                    {
-                        die("QUERY FAILED".mysqli_error());
-                    }
-                 header("location:author.php");
-             }
-
-      }
-    }
-    function delauthor()
-    {
-      global $connection;
-      $authorid=$_GET['aid'];
-      $query="Delete from author where authorid='$authorid'";
-      $go_query=mysqli_query($connection,$query);
-      header("location:author.php");
-    }
-    function updateauthor()
-    {
+function addcat(): void
+{
     global $connection;
-    $authorname=$_POST['updateauthor'];
-    $authorid=$_GET['aid'];
-    $query="update author set authorname='$authorname' where authorid='$authorid'";
-    $go_query=mysqli_query($connection,$query);
-    if(!$go_query)
-    {
-        die("Query Failed".mysqli_error($connection));
+    admin_mutation();
+    db_query($connection, 'INSERT INTO categorys (catname) VALUES (?)', [trim((string) ($_POST['catname'] ?? ''))]);
+    redirect('category.php');
+}
+function delcat(): void
+{
+    global $connection;
+    admin_mutation();
+    db_query($connection, 'DELETE FROM categorys WHERE catid = ?', [positive_id($_POST['cid'] ?? '')]);
+    redirect('category.php');
+}
+function updatecat(): void
+{
+    global $connection;
+    admin_mutation();
+    db_query($connection, 'UPDATE categorys SET catname = ? WHERE catid = ?', [trim((string) ($_POST['updatecategory'] ?? '')), positive_id($_POST['cid'] ?? $_GET['cid'] ?? '')]);
+    redirect('category.php');
+}
+function addauthor(): void
+{
+    global $connection;
+    admin_mutation();
+    db_query($connection, 'INSERT INTO author (authorname) VALUES (?)', [trim((string) ($_POST['authorname'] ?? ''))]);
+    redirect('author.php');
+}
+function delauthor(): void
+{
+    global $connection;
+    admin_mutation();
+    db_query($connection, 'DELETE FROM author WHERE authorid = ?', [positive_id($_POST['aid'] ?? '')]);
+    redirect('author.php');
+}
+function updateauthor(): void
+{
+    global $connection;
+    admin_mutation();
+    db_query($connection, 'UPDATE author SET authorname = ? WHERE authorid = ?', [trim((string) ($_POST['updateauthor'] ?? '')), positive_id($_POST['aid'] ?? $_GET['aid'] ?? '')]);
+    redirect('author.php');
+}
+function product_photo(): ?string
+{
+    $upload = $_FILES['photo'] ?? null;
+    if (!$upload || $upload['error'] === UPLOAD_ERR_NO_FILE) { return null; }
+    if ($upload['error'] !== UPLOAD_ERR_OK || $upload['size'] > 5 * 1024 * 1024 || !is_uploaded_file($upload['tmp_name'])) {
+        throw new InvalidArgumentException('Upload a valid image smaller than 5 MB.');
     }
-    header("location:author.php");
-   }
-   function admin_login()
-   {
-       global $connection;
-       $useraname=$_POST['username'];//textbox name
-       $password=$_POST['password'];//textbox name
-       $hpass=md5($password);
-       $query="Select * from user";
-       $go_query=mysqli_query($connection,$query);
-       while($out=mysqli_fetch_array($go_query))
-       {
-           $dbusername=$out['username'];//fieldname
-           $dbuserpassword=$out['password'];
-           $dbuserrole=$out['role'];
-           if($dbusername==$useraname && $dbuserpassword==$hpass && $dbuserrole=='admin')
-           {
-               $_SESSION['admin']=$useraname;
-               header("location:dashboard.php");
-           }
-           else 
-           {
-               echo "<script>window.alert('Invalid Admin Name and password')</script>";
-               echo "<script>window.location.href='index.php'</script>";
-           }
-       }
-   }
-?>
-
-    
+    $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($upload['tmp_name']);
+    if (!isset($types[$mime]) || !getimagesize($upload['tmp_name'])) { throw new InvalidArgumentException('Unsupported image format.'); }
+    $filename = bin2hex(random_bytes(16)) . '.' . $types[$mime];
+    if (!move_uploaded_file($upload['tmp_name'], dirname(__DIR__) . '/Photos/' . $filename)) { throw new RuntimeException('Unable to save image.'); }
+    return $filename;
+}
+function product_values(bool $new): array
+{
+    $name = trim((string) ($_POST[$new ? 'txtproductname' : 'productname'] ?? ''));
+    $price = filter_var($_POST['price'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
+    $qty = filter_var($_POST['qty'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
+    if ($name === '' || $price === false || $qty === false) { throw new InvalidArgumentException('Enter a name and nonnegative integer price and stock.'); }
+    return [$name, positive_id($_POST['category'] ?? ''), positive_id($_POST['author'] ?? ''), $price, $qty, trim((string) ($_POST[$new ? 'desc' : 'description'] ?? ''))];
+}
+function addproduct(): void
+{
+    global $connection;
+    admin_mutation();
+    $values = product_values(true);
+    $values[] = product_photo() ?? '';
+    db_query($connection, 'INSERT INTO products (productname, categoryid, authorid, price, qty, description, photo) VALUES (?, ?, ?, ?, ?, ?, ?)', $values);
+    redirect('productlist.php');
+}
+function update_product(): void
+{
+    global $connection;
+    admin_mutation();
+    $values = product_values(false);
+    $photo = product_photo();
+    $values[] = $photo;
+    $values[] = positive_id($_POST['pid'] ?? $_GET['pid'] ?? '');
+    db_query($connection, 'UPDATE products SET productname=?, categoryid=?, authorid=?, price=?, qty=?, description=?, photo=COALESCE(?,photo) WHERE productid=?', $values);
+    redirect('productlist.php');
+}
+function del_product(): void
+{
+    global $connection;
+    admin_mutation();
+    db_query($connection, 'DELETE FROM products WHERE productid=?', [positive_id($_POST['pid'] ?? '')]);
+    redirect('productlist.php');
+}

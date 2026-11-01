@@ -1,26 +1,40 @@
 <?php
-session_start();
-include 'userheader.php';
-include '../Admin/connect.php';
-
-// if (!isset($_SESSION['user_id'])) {
-//     header('Location:register.php');
-//     exit();
-// }
-
-$user_id = $_SESSION['user_id'];
-$query = "SELECT * FROM user WHERE userid='$user_id'";
-$go_query = mysqli_query($connection, $query);
-$out = mysqli_fetch_array($go_query);
-
-$default_profile_picture = "default.jpg"; // Path to your default profile image
-$username = $out['username'];
-$email = $out['email'];
-$phone = $out['phone'];
-$address = $out['address'];
-$photo = $out['photo'];
-
-$profile_picture = $photo ? "profileImage/$photo" : "profileImage/$default_profile_picture";
+require_once dirname(__DIR__) . '/Admin/connect.php';
+$user = require_login();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf();
+    $username = trim((string) ($_POST['username'] ?? ''));
+    $email = trim((string) ($_POST['email'] ?? ''));
+    $phone = trim((string) ($_POST['phone'] ?? ''));
+    $address = trim((string) ($_POST['address'] ?? ''));
+    if (strlen($username) < 3 || strlen($username) > 100 || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254 || strlen($phone) > 30 || strlen($address) > 1000) {
+        flash_error('Please provide a valid name, email, phone and address.');
+    } else {
+        $saved = false;
+        try {
+            db_execute($connection, 'UPDATE users SET username = ?, email = ?, phone = ?, address = ? WHERE userid = ?', [$username, $email, $phone, $address, (int) $_SESSION['user_id']]);
+            $saved = true;
+        } catch (PDOException $error) {
+            if ($error->getCode() !== '23505') {
+                throw $error;
+            }
+            flash_error('That username is already taken. Choose another one.');
+            $user = current_user_record() ?? $user;
+            $username = $user['username'];
+            $email = $user['email'];
+            $phone = $user['phone'];
+            $address = $user['address'];
+        }
+        if ($saved) {
+            $_SESSION['user'] = $username;
+            redirect('userProfile.php');
+        }
+    }
+}
+$username = $user['username'];
+$email = $user['email'];
+$phone = $user['phone'];
+$address = $user['address'];
 ?>
 
 <!DOCTYPE html>
@@ -33,33 +47,26 @@ $profile_picture = $photo ? "profileImage/$photo" : "profileImage/$default_profi
     <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
     <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
 </head>
-<body>  
+<body><?php include __DIR__ . '/userheader.php'; echo render_flash(); ?>  
     <div class="container">
-        <div class="ms-2">
-            <img src="<?php echo $profile_picture; ?>" class="img-thumbnail mt-2" style="width: 200px; height: 200px;" alt="User Profile Picture">
-        </div>
-        <form action="upload.php" method="post" enctype="multipart/form-data" class="mt-2">
-            <div class="input-group">
-                <input type="file" name="photo" id="photo" class="form-control">
-                <input type="submit" value="Upload Image" name="submit" class="btn btn-primary">
-            </div>
-        </form> 
-        <form action="edit.php" method="post" class="mt-2"> 
+        <p class="text-muted">Manage your account details below.</p> 
+        <form action="userProfile.php" method="post" class="mt-2">
+<?php echo csrf_field(); ?> 
             <div class="input-group mt-2">
                 <label for="username" class="w-100">Name</label>
-                <input type="text" name="username" value="<?php echo $username ?>" id="username" class="form-control">
+                <input type="text" name="username" value="<?php echo e($username); ?>" id="username" class="form-control">
             </div>
             <div class="input-group mt-2">
                 <label for="email" class="w-100">Email</label>
-                <input type="text" name="email" value="<?php echo $email ?>" id="email" class="form-control">
+                <input type="text" name="email" value="<?php echo e($email); ?>" id="email" class="form-control">
             </div>
             <div class="input-group mt-2">
                 <label for="address" class="w-100">Address</label>
-                <input type="text" name="address" value="<?php echo $address ?>" id="address" class="form-control">
+                <input type="text" name="address" value="<?php echo e($address); ?>" id="address" class="form-control">
             </div>
             <div class="input-group mt-2">
                 <label for="phone" class="w-100">Phone</label>
-                <input type="text" name="phone" value="<?php echo $phone ?>" id="phone" class="form-control">
+                <input type="text" name="phone" value="<?php echo e($phone); ?>" id="phone" class="form-control">
             </div>
             <div class="mt-3 text-center">
                 <input type="submit" value="Update" name="submit" class="btn btn-primary">

@@ -1,8 +1,12 @@
-<?php $adminPage = basename($_SERVER['PHP_SELF']); ?>
+<?php
+require_once __DIR__ . '/connect.php';
+require_admin();
+$adminPage = basename($_SERVER['PHP_SELF']);
+?>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center fw-bold" href="dashboard.php">
-            <img src="../photos/logo.png" alt="Book Palace" style="width: 60px; height: 44px; object-fit: contain; margin-right: 10px;">
+            <img src="../Photos/logo.png" alt="Book Palace" style="width: 60px; height: 44px; object-fit: contain; margin-right: 10px;">
             <span>Book Palace Admin</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +30,7 @@
                     <a class="nav-link <?php echo $adminPage === 'feedback.php' ? 'active' : ''; ?>" href="feedback.php">Feedback</a>
                 </li>
                 <li class="nav-item ms-lg-2">
-                    <a class="btn btn-outline-dark btn-sm mt-1 mt-lg-0" href="logout.php">Logout</a>
+                    <form action="logout.php" method="post" class="d-inline"><?php echo csrf_field(); ?><button type="submit" class="btn btn-outline-dark btn-sm mt-1 mt-lg-0">Logout</button></form>
                 </li>
             </ul>
         </div>

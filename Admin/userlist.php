@@ -1,8 +1,8 @@
 <?php
-session_start();
-include 'connect.php';
-include 'function.php';
-if (isset($_GET['action']) && $_GET['action'] == 'delete') {
+require_once __DIR__ . '/connect.php';
+require_admin();
+require_once __DIR__ . '/function.php';
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && ($_POST['action'] ?? '') === 'delete') {
     deluser();
 }
 ?>
@@ -50,19 +50,18 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
                 <th>Action</th>
             </tr>
             <?php
-            $go_query = "SELECT * FROM user ORDER BY userid DESC";
-            $query = mysqli_query($connection, $go_query);
-            while ($row = mysqli_fetch_array($query)) {
-                $userid = $row['userid'];
-                $username = $row['username'];
-                $user_role = $row['role'];
-                $user_email = $row['email'];
+            $users = db_query($connection, 'SELECT userid, username, role, email FROM users ORDER BY userid DESC');
+            while ($row = db_fetch_assoc($users)) {
+                $userid = (int) $row['userid'];
+                $username = e($row['username']);
+                $user_role = e($row['role']);
+                $user_email = e($row['email']);
                 echo "<tr>";
                 echo "<td>{$userid}</td>";
                 echo "<td>{$username}</td>";
                 echo "<td>{$user_role}</td>";
                 echo "<td>{$user_email}</td>";
-                echo "<td><a href='userlist.php?action=delete&uid={$userid}' class='btn btn-danger btn-sm' onclick=\"return confirm('Are you sure?')\">Delete</a></td>";
+                echo "<td><form action='userlist.php' method='post' class='d-inline' onsubmit=\"return confirm('Are you sure?')\">" . csrf_field() . "<input type='hidden' name='action' value='delete'><input type='hidden' name='uid' value='{$userid}'><button type='submit' class='btn btn-danger btn-sm'>Delete</button></form></td>";
                 echo "</tr>";
             }
             ?>

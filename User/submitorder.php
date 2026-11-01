@@ -1,27 +1,11 @@
-<?php 
-session_start();
-include '../Admin/connect.php';
-if (!empty($_SESSION['user'])) {
-
-    $user_name = $_SESSION['user'];
-
-    $query = "select * from user where username='$user_name'";
-
-    $go_query = mysqli_query($connection, $query);
-
-    while ($out = mysqli_fetch_array($go_query)) {
-
-        $user_id = $out['userid'];
-
-        $user_name = $out['username'];
-
-        $email = $out['email'];
-
-        $phone = $out['phone'];
-
-        $address = $out['address'];
-    }
-}
+<?php
+require_once dirname(__DIR__) . '/Admin/connect.php';
+$user = require_login();
+if (empty($_SESSION['cart'])) { redirect('cart.php'); }
+$user_name = $user['username'];
+$email = $user['email'];
+$phone = $user['phone'];
+$address = $user['address'];
 ?>
 
 <!DOCTYPE html>
@@ -47,7 +31,7 @@ if (!empty($_SESSION['user'])) {
          <span class="text-danger">
             <?php
             if (!empty($_SESSION['user'])) {
-              echo $_SESSION['user'];
+              echo e($_SESSION['user']);
             } else {
               $_SESSION['user'] = '';
             }
@@ -60,16 +44,17 @@ if (!empty($_SESSION['user'])) {
      <div class="row">
         <div class="col-md-6 offset-md-3">
             <form action="submit.php" method="post">
+<?php echo csrf_field(); ?>
                 <div class="mb-3">
                     <label for="username" class="form-label">User Name</label>
-                    <input type="text" value="<?php if(isset($user_name)){echo $user_name;}?>" name="username" class="form-control" />
+                    <input type="text" value="<?php if(isset($user_name)){echo e($user_name);}?>" name="username" class="form-control" />
                 </div>
 
                 <div class="mb-3">
 
                     <label for="email" class="form-label">Email</label>
 
-                    <input type="text" value="<?php if(isset($email)){echo $email;}?>" name="email" class="form-control" />
+                    <input type="text" value="<?php if(isset($email)){echo e($email);}?>" name="email" class="form-control" />
 
                 </div>
 
@@ -77,7 +62,7 @@ if (!empty($_SESSION['user'])) {
 
                     <label for="phone" class="form-label">Phone</label>
 
-                    <input type="text" value="<?php if(isset($phone)){echo $phone;}?>" name="phone" class="form-control" />
+                    <input type="text" value="<?php if(isset($phone)){echo e($phone);}?>" name="phone" class="form-control" />
 
                 </div>
 
@@ -85,35 +70,11 @@ if (!empty($_SESSION['user'])) {
 
                     <label for="address" class="form-label">Address</label>
 
-                    <textarea name="address" class="form-control"><?php if(isset($address)){echo $address;}?></textarea>
+                    <textarea name="address" class="form-control"><?php if(isset($address)){echo e($address);}?></textarea>
 
                 </div>
 
-                <div class="mb-3">
-
-                    <label for="payment_type" class="form-label">Payment Type</label>
-
-                    <select name="payment_type" class="form-select">
-
-                        <option value="Master Card">Master Card</option>
-
-                        <option value="Visa Card">Visa Card</option>
-
-                        <option value="Credit Card">KBZ Pay</option>
-
-                    </select>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label for="cardno" class="form-label">CardNo:/Phone No:</label>
-
-                    <input type="text" name="cardno" class="form-control" />
-
-                </div>
-
-                <input type="hidden" value="<?php echo $user_id ?>" name="userid" />
+                <p class="text-muted">No online payment is collected here. Payment and delivery will be arranged separately. Never enter card numbers or banking credentials.</p>
 
                 <input type="submit" name="submit" value="Submit" class="btn btn-primary" />
 

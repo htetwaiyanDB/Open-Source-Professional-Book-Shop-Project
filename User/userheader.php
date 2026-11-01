@@ -1,5 +1,5 @@
 <?php
-include '../Admin/connect.php';
+require_once dirname(__DIR__) . '/Admin/connect.php';
 $userPage = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -19,7 +19,7 @@ $userPage = basename($_SERVER['PHP_SELF']);
     <nav class="navbar navbar-expand-lg navbar-light sticky-top bg-light">
         <div class="container-fluid">
             <a class="navbar-brand text-dark" href="home.php">
-                <img src="../Photos/logo.png" style="width: 100px; height:50px;" alt="Book Palace">
+                <img src="Photos/logo.png" style="width: 100px; height:50px;" alt="Book Palace">
                 
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,26 +28,30 @@ $userPage = basename($_SERVER['PHP_SELF']);
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-dark <?php echo $userPage === 'home.php' ? 'active' : ''; ?>" <?php echo $userPage === 'home.php' ? 'aria-current="page"' : ''; ?> href="home.php">Home</a>
+                        <a class="nav-link text-dark active" aria-current="page" href="home.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo in_array($userPage, ['userindex.php', 'product_detail.php']) ? 'active' : ''; ?>" href="userindex.php">All Books</a>
                     </li>
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                   
-                    <?php else: ?>
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo $userPage === 'newrelease.php' ? 'active' : ''; ?>" href="newrelease.php">Newrelease</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo $userPage === 'bestseller.php' ? 'active' : ''; ?>" href="bestseller.php">Bestseller</a>
                     </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link text-dark <?php echo in_array($userPage, ['login.php', 'register.php', 'userProfile.php']) ? 'active' : ''; ?>" href="login.php">My Account</a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo $userPage === 'contact.php' ? 'active' : ''; ?>" href="contact.php">Contact Us</a>
+                    </li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark <?php echo $userPage === 'userProfile.php' ? 'active' : ''; ?>" href="userProfile.php">My Account</a>
+                    </li>
+                    <li class="nav-item">
+                        <form action="logout.php" method="post" class="d-inline"><?php echo csrf_field(); ?><button type="submit" class="nav-link text-dark border-0 bg-transparent">Logout</button></form>
+                    </li>
+                    <?php else: ?>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark <?php echo in_array($userPage, ['login.php', 'register.php']) ? 'active' : ''; ?>" href="login.php">Login</a>
                     </li>
                     <?php endif; ?>
                     <li class="nav-item dropdown">
@@ -56,13 +60,9 @@ $userPage = basename($_SERVER['PHP_SELF']);
                             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 <?php
                                 if (isset($_GET['category_id']) && $_GET['category_id'] !== '') {
-                                    $stmt = $connection->prepare("SELECT catname FROM categorys WHERE catid = ?");
-                                    $stmt->bind_param("i", $_GET['category_id']);
-                                    $stmt->execute();
-                                    $result = $stmt->get_result();
-                                    $row = $result->fetch_assoc();
-                                    echo htmlspecialchars($row['catname']);
-                                    $stmt->close();
+                                    $result = db_query($connection, 'SELECT catname FROM categorys WHERE catid = ?', [(int) $_GET['category_id']]);
+                                    $row = db_fetch_assoc($result);
+                                    echo e($row['catname'] ?? 'All Categories');
                                 } else {
                                     echo "All Categories";
                                 }
@@ -72,10 +72,10 @@ $userPage = basename($_SERVER['PHP_SELF']);
                                 <li><a class="dropdown-item" href="userindex.php">All Categories</a></li>
                                 <?php
                                 $query = "SELECT * FROM categorys";
-                                $result = mysqli_query($connection, $query);
-                                while ($row = mysqli_fetch_assoc($result)) {
+                                $result = db_query($connection, $query);
+                                while ($row = db_fetch_assoc($result)) {
                                     $selected = (isset($_GET['category_id']) && $row['catid'] == $_GET['category_id']) ? 'active' : '';
-                                    echo "<li><a class='dropdown-item $selected' href='?category_id=" . htmlspecialchars($row['catid']) . "'>" . htmlspecialchars($row['catname']) . "</a></li>";
+                                    echo "<li><a class='dropdown-item $selected' href='userindex.php?category_id=" . e($row['catid']) . "'>" . e($row['catname']) . "</a></li>";
                                 }
                                 ?>
                             </ul>

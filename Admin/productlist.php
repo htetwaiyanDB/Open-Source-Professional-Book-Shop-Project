@@ -1,8 +1,8 @@
 <?php
-session_start();
-include 'connect.php';
-include 'function.php';
-if (isset($_GET['action']) && $_GET['action'] == 'delete') {
+require_once __DIR__ . '/connect.php';
+require_admin();
+require_once __DIR__ . '/function.php';
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && ($_POST['action'] ?? '') === 'delete') {
     del_product();
 }
 ?>
@@ -44,24 +44,23 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
                 <th>Action</th>
             </tr>
             <?php
-            $go_query = "SELECT products.*, categorys.*, author.authorname
+            $products = db_query($connection, 'SELECT products.productid, products.productname, products.description, products.price, products.qty, products.photo, categorys.catname, author.authorname
                          FROM products
                          JOIN categorys ON products.categoryid = categorys.catid
                          JOIN author ON products.authorid = author.authorid
-                         ORDER BY products.productid DESC";
-            $query = mysqli_query($connection, $go_query);
-            while ($row = mysqli_fetch_array($query)) {
-                $productid = $row['productid'];
-                $productname = $row['productname'];
-                $authorname = $row['authorname'];
-                $catname = $row['catname'];
-                $desc = $row['description'];
-                $price = $row['price'];
-                $qty = $row['Qty'];
-                $photo = $row['photo'];
+                         ORDER BY products.productid DESC');
+            while ($row = db_fetch_assoc($products)) {
+                $productid = (int) $row['productid'];
+                $productname = e($row['productname']);
+                $authorname = e($row['authorname']);
+                $catname = e($row['catname']);
+                $desc = e($row['description']);
+                $price = e($row['price']);
+                $qty = (int) $row['qty'];
+                $photo = e(rawurlencode($row['photo']));
                 echo "<tr>";
                 echo "<td>{$productid}</td>";
-                echo "<td><img src='../photos/{$photo}' width='60' alt='' loading='lazy' decoding='async'></td>";
+                echo "<td><img src='../Photos/{$photo}' width='60' alt='' loading='lazy' decoding='async'></td>";
                 echo "<td>{$productname}</td>";
                 echo "<td>{$authorname}</td>";
                 echo "<td>{$catname}</td>";
@@ -70,7 +69,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
                 echo "<td>{$qty}</td>";
                 echo "<td>
                         <a href='edit.php?action=edit&pid={$productid}' class='btn btn-outline-success btn-sm'>Edit</a>
-                        <a href='productlist.php?action=delete&pid={$productid}' class='btn btn-danger btn-sm' onclick=\"return confirm('Are you sure?')\">Delete</a>
+                        <form action='productlist.php' method='post' class='d-inline' onsubmit=\"return confirm('Are you sure?')\">" . csrf_field() . "<input type='hidden' name='action' value='delete'><input type='hidden' name='pid' value='{$productid}'><button type='submit' class='btn btn-danger btn-sm'>Delete</button></form>
                       </td>";
                 echo "</tr>";
             }

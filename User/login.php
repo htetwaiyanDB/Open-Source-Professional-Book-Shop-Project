@@ -1,8 +1,7 @@
 <?php
+require_once dirname(__DIR__) . '/Admin/connect.php';
+require_once __DIR__ . '/userfunction.php';
 if (isset($_POST['btnuserlogin'])) {
-    session_start();
-    require_once 'userfunction.php';
-    require_once '../Admin/connect.php';
     user_login();
 }
 ?>
@@ -51,6 +50,7 @@ if (isset($_POST['btnuserlogin'])) {
             </div>
 
             <form action="" method="post" class="auth-form">
+<?php echo csrf_field(); echo render_flash(); ?>
                 <label class="auth-field">
                     <span>Username</span>
                     <div class="auth-input">

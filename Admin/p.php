@@ -1,10 +1,14 @@
 <?php
-session_start();
-    include 'connect.php';
-    include 'function.php';
+require_once __DIR__ . '/connect.php';
+require_admin();
+
+
+
+    require_once __DIR__ . '/function.php';
         if(isset($_POST['btnaddproduct']))
             {
-                addproduct();
+                verify_csrf();
+    addproduct();
             }
 ?>
 <!DOCTYPE html>
@@ -99,7 +103,7 @@ session_start();
 <?php
                     if(isset($_SESSION['admin']))
                     {
-                        echo $_SESSION['admin'];
+                        echo e($_SESSION['admin']);
                     }
                     else
                     {
@@ -111,7 +115,8 @@ session_start();
 </div>
 </div>
 <section>
-<form class="form" method="post">
+<form class="form" method="post" enctype="multipart/form-data">
+<?php echo csrf_field(); ?>
     <h3 class="heading">Add Book</h3>
     <input type="text" name="txtproductname" placeholder="Bookname" id="" class="input">
 
@@ -120,13 +125,13 @@ session_start();
                         <option value="">-----Author Name-----</option>
                             <?php
                             $query="Select * from author";
-                            $go_query=mysqli_query($connection,$query);
-                            while($row=mysqli_fetch_array($go_query))
+                            $go_query=db_query($connection,$query);
+                            while($row=db_fetch_array($go_query))
                             {
                             $authorid=$row['authorid'];
                             $authorname=$row['authorname'];
                                 {
-                                    echo "<option value={$authorid}>{$authorname}</option>";
+                                    echo "<option value=" . e($authorid) . ">" . e($authorname) . "</option>";
                                 }
                             }
                             ?>
@@ -136,13 +141,13 @@ session_start();
                         <option value="">-----Category Name-----</option>
                             <?php
                             $query="Select * from categorys";
-                            $go_query=mysqli_query($connection,$query);
-                            while($row=mysqli_fetch_array($go_query))
+                            $go_query=db_query($connection,$query);
+                            while($row=db_fetch_array($go_query))
                             {
                             $catid=$row['catid'];
                             $catname=$row['catname'];
                                 {
-                                    echo "<option value={$catid}>{$catname}</option>";
+                                    echo "<option value=" . e($catid) . ">" . e($catname) . "</option>";
                                 }
                             }
                             ?>
@@ -151,9 +156,9 @@ session_start();
         <input type="text" name="desc" placeholder="Description" id="" class="input"> 
         <input type="text" name="price" placeholder="Price" id="" class="input">
         <input type="text" name="qty" placeholder="Quantity" id="" class="input">
-        <input type="file" name="txtproductname" placeholder="Photo" id="" class="input">
+        <input type="file" name="photo" placeholder="Photo" id="" class="input">
 
-    <button class="btn" name="btnadduser">Add Book</button>
+    <button class="btn" name="btnaddproduct">Add Book</button>
 </form>
 </section>
 

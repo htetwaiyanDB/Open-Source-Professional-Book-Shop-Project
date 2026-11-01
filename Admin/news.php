@@ -1,6 +1,9 @@
 <?php
-session_start();
-include 'connect.php';
+require_once __DIR__ . '/connect.php';
+require_admin();
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +29,7 @@ include 'connect.php';
                     <?php
                     if(isset($_SESSION['admin']))
                     {
-                        echo $_SESSION['admin'];
+                        echo e($_SESSION['admin']);
                     }
                     else
                     {
@@ -47,9 +50,9 @@ include 'connect.php';
                         <span class="badge">
                         <?php
                         $query="Select * from categorys";
-                        $get_query=mysqli_query($connection,$query);
-                        $num=mysqli_num_rows($get_query);
-                        echo $num;
+                        $get_query=db_query($connection,$query);
+                        $num=db_num_rows($get_query);
+                        echo e($num);
                         ?>
                         </span>
                         </a>
@@ -64,9 +67,9 @@ include 'connect.php';
                         <span class="badge">
                         <?php
                         $query="Select * from author";
-                        $get_query=mysqli_query($connection,$query);
-                        $num=mysqli_num_rows($get_query);
-                        echo $num;
+                        $get_query=db_query($connection,$query);
+                        $num=db_num_rows($get_query);
+                        echo e($num);
                         ?>
                         </span>
                         </a>
@@ -81,10 +84,10 @@ include 'connect.php';
                         <a href="userlist.php" class="btn btn-dark">View Details 
                         <span class="badge">
                         <?php
-                          $query="Select * from user";
-                          $get_query=mysqli_query($connection,$query);
-                          $num=mysqli_num_rows($get_query);
-                          echo $num;
+                          $query="SELECT userid, username, email, phone, address, role FROM users";
+                          $get_query=db_query($connection,$query);
+                          $num=db_num_rows($get_query);
+                          echo e($num);
                           ?>
                         </span>
                         </a>
@@ -100,9 +103,9 @@ include 'connect.php';
                         <span class="badge">
                         <?php
                           $query="Select * from products";
-                          $get_query=mysqli_query($connection,$query);
-                          $num=mysqli_num_rows($get_query);
-                          echo $num;
+                          $get_query=db_query($connection,$query);
+                          $num=db_num_rows($get_query);
+                          echo e($num);
                           ?>
                         </span>
                         </a>
@@ -118,9 +121,9 @@ include 'connect.php';
                         <span class="badge">
                         <?php
                           $query="Select * from orders";
-                          $get_query=mysqli_query($connection,$query);
-                          $num=mysqli_num_rows($get_query);
-                          echo $num;
+                          $get_query=db_query($connection,$query);
+                          $num=db_num_rows($get_query);
+                          echo e($num);
                           ?>
                         </span>
                         </a>

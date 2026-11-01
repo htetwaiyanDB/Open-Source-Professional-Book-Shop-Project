@@ -1,53 +1,25 @@
 <?php
-session_start();
-include '../Admin/connect.php';
-include 'userfunction.php'; 
-
-$category_id = isset($_GET['category_id']) && $_GET['category_id'] !== '' ? (int) $_GET['category_id'] : null;
-$search = isset($_GET['search_query']) ? trim($_GET['search_query']) : '';
-
+require_once dirname(__DIR__) . '/Admin/connect.php';
+$category_id = filter_var($_GET['category_id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
+$search = trim((string) ($_GET['search_query'] ?? ''));
 $perpage = 32;
-$page = max(1, isset($_GET['page']) ? (int) $_GET['page'] : 1);
+$page = min(1000000, max(1, (int) ($_GET['page'] ?? 1)));
 $start = ($page - 1) * $perpage;
-
-$filters = [];
-$filterTypes = '';
-$filterValues = [];
-
+$where = ' WHERE 1=1';
+$params = [];
 if ($search !== '') {
-    $filters[] = '(products.productname LIKE ? OR author.authorname LIKE ?)';
-    $searchPattern = '%' . $search . '%';
-    $filterTypes .= 'ss';
-    $filterValues[] = $searchPattern;
-    $filterValues[] = $searchPattern;
+    $where .= ' AND (productname ILIKE ? OR authorname ILIKE ?)';
+    $params[] = '%' . $search . '%';
+    $params[] = '%' . $search . '%';
 }
-
-if ($category_id !== null) {
-    $filters[] = 'products.categoryid = ?';
-    $filterTypes .= 'i';
-    $filterValues[] = $category_id;
+if ($category_id) {
+    $where .= ' AND categoryid = ?';
+    $params[] = $category_id;
 }
-
-$whereSql = $filters ? ' WHERE ' . implode(' AND ', $filters) : '';
-$fromSql = ' FROM products JOIN author ON products.authorid = author.authorid' . $whereSql;
-
-$countStatement = $connection->prepare('SELECT COUNT(*) AS total' . $fromSql);
-if ($filterTypes !== '') {
-    $countStatement->bind_param($filterTypes, ...$filterValues);
-}
-$countStatement->execute();
-$total_products = (int) $countStatement->get_result()->fetch_assoc()['total'];
-$countStatement->close();
-$num = max(1, (int) ceil($total_products / $perpage));
-
-$productSql = 'SELECT products.productid, products.productname, products.price, products.Qty, products.photo, author.authorname'
-    . $fromSql . ' ORDER BY products.productid DESC LIMIT ?, ?';
-$productStatement = $connection->prepare($productSql);
-$productTypes = $filterTypes . 'ii';
-$productValues = array_merge($filterValues, [$start, $perpage]);
-$productStatement->bind_param($productTypes, ...$productValues);
-$productStatement->execute();
-$go_query = $productStatement->get_result();
+$from = ' FROM products JOIN author ON products.authorid = author.authorid';
+$go_query = db_query($connection, 'SELECT products.*, author.authorname' . $from . $where . ' ORDER BY productid LIMIT ? OFFSET ?', array_merge($params, [$perpage, $start]));
+$total_products = (int) db_scalar($connection, 'SELECT COUNT(*)' . $from . $where, $params);
+$num = (int) ceil($total_products / $perpage);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,7 +41,7 @@ $go_query = $productStatement->get_result();
 <span class="text-danger">
 <?php
                   if (!empty($_SESSION['user'])) {
-                    echo $_SESSION['user'];
+                    echo e($_SESSION['user']);
                 } else {
                     $_SESSION['user'] = '';
                     echo "";
@@ -84,29 +56,29 @@ $go_query = $productStatement->get_result();
       <div class="col-sm-12 mt-5">
         <div class="row">
           <?php
-          if (mysqli_num_rows($go_query) > 0) {
-          while ($out = mysqli_fetch_array($go_query)) {
+          if (db_num_rows($go_query) > 0) {
+          while ($out = db_fetch_array($go_query)) {
             $product_id = $out['productid'];
             $product_name = $out['productname'];
             $authorname= $out['authorname'];
             $price = $out['price'];
             $photo = $out['photo'];
-            $Qty = $out ['Qty'];
+            $Qty = $out ['qty'];
             ?>
             <div class="col-md-3 mb-3">
               <div class="card" style="border:none;">
-                <a href="product_detail.php?id=<?php echo $product_id; ?>" class="ms-2 mt-3">
-                  <img src="../Photos/<?php echo $photo; ?>" class="card-img-top img-fluid" alt="<?php echo $product_name; ?>" loading="lazy" decoding="async">
+                <a href="product_detail.php?id=<?php echo e($product_id); ?>" class="ms-2 mt-3">
+                  <img src="Photos/<?php echo e($photo); ?>" class="card-img-top img-fluid" alt="<?php echo e($product_name); ?>">
                 </a>
                 <div class="card-body">
-                  <h5 class="card-title"><?php echo $product_name; ?></h5>
-                  <p class="card-text" style="color:red;"><?php echo $authorname; ?></p>
-                  <p class="card-text"><?php echo $price; ?></p>
-                  <p class="card-text">Stocks <?php echo $Qty; ?></p>
+                  <h5 class="card-title"><?php echo e($product_name); ?></h5>
+                  <p class="card-text" style="color:red;"><?php echo e($authorname); ?></p>
+                  <p class="card-text"><?php echo e($price); ?></p>
+                  <p class="card-text">Stocks <?php echo e($Qty); ?></p>
                     <?php if($Qty==0){?>
-                      <a href="index.php" class="btn btn-danger">Out of stock</a>
+                      <button type="button" disabled class="btn btn-danger">Out of stock</button>
                     <?php } else { ?>
-                      <a href="addtocart.php?id=<?php echo $product_id; ?>" class="btn btn-primary">Add to Cart</a>
+                      <form action="addtocart.php" method="post"><?php echo csrf_field(); ?><input type="hidden" name="id" value="<?php echo e($product_id); ?>"><button type="submit" class="btn btn-primary">Add to Cart</button></form>
                     <?php } ?>
                   </div>
                 </div>
@@ -127,21 +99,11 @@ $go_query = $productStatement->get_result();
       for ($i = 1; $i <= $num; $i++) {
         if ($i == $page) 
         {
-          $pageQuery = http_build_query(array_filter([
-              'page' => $i,
-              'search_query' => $search,
-              'category_id' => $category_id,
-          ], static fn($value) => $value !== null && $value !== ''));
-          echo "<li class='page-item active'><a class='page-link' href='userindex.php?{$pageQuery}'>{$i}</a></li>";
+          echo "<li class='page-item active'><a class='page-link' href='userindex.php?" . e(http_build_query(['page' => $i, 'category_id' => $category_id, 'search_query' => $search])) . "'>{$i}</a></li>";
         } 
         else 
         {
-          $pageQuery = http_build_query(array_filter([
-              'page' => $i,
-              'search_query' => $search,
-              'category_id' => $category_id,
-          ], static fn($value) => $value !== null && $value !== ''));
-          echo "<li class='page-item'><a class='page-link' href='userindex.php?{$pageQuery}'>{$i}</a></li>";
+          echo "<li class='page-item'><a class='page-link' href='userindex.php?" . e(http_build_query(['page' => $i, 'category_id' => $category_id, 'search_query' => $search])) . "'>{$i}</a></li>";
         }
       }
       ?>

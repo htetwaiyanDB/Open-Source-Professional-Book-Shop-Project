@@ -1,9 +1,14 @@
 <?php
-session_start();
-include 'connect.php';
-include 'function.php';
-if (isset($_GET['action']) && $_GET['action'] == 'delete' && function_exists('delfeedback')) {
-    delfeedback();
+require_once __DIR__ . '/connect.php';
+require_admin();
+require_once __DIR__ . '/function.php';
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && ($_POST['action'] ?? '') === 'delete') {
+    verify_csrf();
+    $fid = filter_var($_POST['fid'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($fid) {
+        db_query($connection, 'DELETE FROM feedback WHERE feedbackid = ?', [$fid]);
+    }
+    redirect('feedback.php');
 }
 ?>
 <!DOCTYPE html>
@@ -47,14 +52,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && function_exists('de
                 <th>Message</th>
             </tr>
             <?php
-            $go_query = "SELECT * FROM feedback ORDER BY feedbackid DESC";
-            $query = mysqli_query($connection, $go_query);
-            while ($row = mysqli_fetch_array($query)) {
-                $feedid = $row['feedbackid'];
-                $name = $row['name'];
-                $email = $row['email'];
-                $phone = $row['phone'];
-                $message = $row['message'];
+            $feedback = db_query($connection, 'SELECT feedbackid, name, email, phone, message FROM feedback ORDER BY feedbackid DESC');
+            while ($row = db_fetch_assoc($feedback)) {
+                $feedid = (int) $row['feedbackid'];
+                $name = e($row['name']);
+                $email = e($row['email']);
+                $phone = e($row['phone']);
+                $message = e($row['message']);
                 echo "<tr>";
                 echo "<td>{$feedid}</td>";
                 echo "<td>{$name}</td>";

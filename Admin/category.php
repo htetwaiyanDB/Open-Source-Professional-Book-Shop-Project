@@ -1,3 +1,26 @@
+<?php
+require_once __DIR__ . '/connect.php';
+require_admin();
+
+
+require_once __DIR__ . '/function.php';
+if(isset($_POST['btnaddcat']))
+{
+    verify_csrf();
+    addcat();
+}
+if(isset($_POST['action']) && $_POST['action'] === 'delete')
+{
+    verify_csrf();
+    delcat();
+}
+if(isset($_POST['btnupdatecategory']))
+{
+    verify_csrf();
+    updatecat();
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
     <meta charset="UTF-8">
@@ -83,23 +106,7 @@
   animation: btn-anim1 2s linear infinite;
 }
     </style>
-<?php
-session_start();
-include 'connect.php';
-include 'function.php';
-if(isset($_POST['btnaddcat']))
-{
-    addcat();
-}
-if(isset($_GET['action'])&& $_GET['action']=='delete')
-{
-    delcat();
-}
-if(isset($_POST['btnupdatecategory']))
-{
-    updatecat();
-}
-?>
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -120,7 +127,7 @@ if(isset($_POST['btnupdatecategory']))
                 <?php
                     if(isset($_SESSION['admin']))
                     {
-                        echo $_SESSION['admin'];
+                        echo e($_SESSION['admin']);
                     }
                     else
                     {
@@ -141,6 +148,7 @@ if(isset($_POST['btnupdatecategory']))
         </div>
         <div class="card-body">
             <form action="" method="post">
+<?php echo csrf_field(); ?>
                 <div class="mb-3">
                     <label for="" class="form-label">
                     Category Name
@@ -158,9 +166,9 @@ if(isset($_POST['btnupdatecategory']))
         if(isset($_GET['action'])&& $_GET['action']=='edit')
             {
                 $catid=$_GET['cid'];
-                $query="Select  * from categorys where catid='$catid'";
-                $go_query=mysqli_query($connection,$query);
-                while($out=mysqli_fetch_array($go_query))
+                $query="Select  * from categorys where catid=?";
+                $go_query=db_query($connection,$query, [(int) $catid]);
+                while($out=db_fetch_array($go_query))
                 {
                     $catname=$out['catname'];//fieldname
     ?>
@@ -170,14 +178,15 @@ if(isset($_POST['btnupdatecategory']))
         </div>
         <div class="card-body">
             <form action="" method="post">
+<?php echo csrf_field(); ?>
                 <div class="mb-3">
                 <label for="" class="form-label"class="user-box">
                 Category Name
                 </label>
-                <input type="text" name="updatecategory" class="form-control" value="<?php echo $catname  ?>">
+                <input type="text" name="updatecategory" class="form-control" value="<?php echo e($catname); ?>">
                 </div>
                 <div class="d-grid">
-                <input type="submit" name="btnupdatecategory" value="Update Category" class="btn btn-outline-info">
+                <input type="hidden" name="cid" value="<?php echo (int) $catid; ?>"><input type="submit" name="btnupdatecategory" value="Update Category" class="btn btn-outline-info">
                 </div>
             </form>          
         </div>
@@ -197,19 +206,19 @@ if(isset($_POST['btnupdatecategory']))
         </tr>
         <?php
                     $go_query="Select  * from categorys";
-                    $query=mysqli_query($connection,$go_query);
-                    while($row=mysqli_fetch_array($query))
+                    $query=db_query($connection,$go_query);
+                    while($row=db_fetch_array($query))
                     {
                         $catid=$row['catid'];//fieldname
                         $catname=$row['catname'];
                         
                         
                         echo "<tr>";
-                        echo "<td>{$catid}</td>";
-                        echo "<td>{$catname}</td>";
+                        echo "<td>" . e($catid) . "</td>";
+                        echo "<td>" . e($catname) . "</td>";
                        
                         echo "<td>
-                                <a href='category.php?action=delete&cid={$catid}' class='btn btn-danger' onclick='return confirm('Are you sure?')'>Delete</a> ||
+                                <form action='category.php' method='post' style='display:inline'>" . csrf_field() . "<input type='hidden' name='action' value='delete'><input type='hidden' name='cid' value='{$catid}'><button type='submit' class='btn btn-danger'>Delete</button></form> ||
                                 <a href='category.php?action=edit&cid={$catid}' class='btn btn-outline-success' >Edit</a>
                                 </td>";
                         echo "</tr>";

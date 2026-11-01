@@ -1,25 +1,32 @@
+<?php
+require_once __DIR__ . '/connect.php';
+require_admin();
+
+
+require_once __DIR__ . '/function.php';
+if(isset($_POST['btnaddauthor']))
+{
+    verify_csrf();
+    addauthor();
+}
+if(isset($_POST['action']) && $_POST['action'] === 'delete')
+{
+    verify_csrf();
+    delauthor();
+}
+if(isset($_POST['btnupdateauthor']))
+{
+    verify_csrf();
+    updateauthor();
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-<?php
-session_start();
-include 'connect.php';
-include 'function.php';
-if(isset($_POST['btnaddauthor']))
-{
-    addauthor();
-}
-if(isset($_GET['action'])&& $_GET['action']=='delete')
-{
-    delauthor();
-}
-if(isset($_POST['btnupdateauthor']))
-{
-    updateauthor();
-}
-?>
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +47,7 @@ if(isset($_POST['btnupdateauthor']))
                 <?php
                     if(isset($_SESSION['admin']))
                     {
-                        echo $_SESSION['admin'];
+                        echo e($_SESSION['admin']);
                     }
                     else
                     {
@@ -61,6 +68,7 @@ if(isset($_POST['btnupdateauthor']))
         </div>
         <div class="card-body">
             <form action="" method="post">
+<?php echo csrf_field(); ?>
                 <div class="mb-3">
                     <label for="" class="form-label">
                     Author name
@@ -78,9 +86,9 @@ if(isset($_POST['btnupdateauthor']))
         if(isset($_GET['action'])&& $_GET['action']=='edit')
             {
                 $authorid=$_GET['aid'];
-                $query="Select  * from author where authorid='$authorid'";
-                $go_query=mysqli_query($connection,$query);
-                while($out=mysqli_fetch_array($go_query))
+                $query="Select  * from author where authorid=?";
+                $go_query=db_query($connection,$query, [(int) $authorid]);
+                while($out=db_fetch_array($go_query))
                 {
                     $authorname=$out['authorname'];//fieldname
     ?>
@@ -90,14 +98,15 @@ if(isset($_POST['btnupdateauthor']))
         </div>
         <div class="card-body">
             <form action="" method="post">
+<?php echo csrf_field(); ?>
                 <div class="mb-3">
                 <label for="" class="form-label">
                  Author Name
                 </label>
-                <input type="text" name="updateauthor" class="form-control" value="<?php echo $authorname  ?>">
+                <input type="text" name="updateauthor" class="form-control" value="<?php echo e($authorname); ?>">
                 </div>
                 <div class="d-grid">
-                <input type="submit" name="btnupdateauthor" value="Update Author" class="btn btn-outline-info">
+                <input type="hidden" name="aid" value="<?php echo (int) $authorid; ?>"><input type="submit" name="btnupdateauthor" value="Update Author" class="btn btn-outline-info">
                 </div>
             </form>          
         </div>
@@ -117,19 +126,19 @@ if(isset($_POST['btnupdateauthor']))
         </tr>
         <?php
                     $go_query="Select  * from author";
-                    $query=mysqli_query($connection,$go_query);
-                    while($row=mysqli_fetch_array($query))
+                    $query=db_query($connection,$go_query);
+                    while($row=db_fetch_array($query))
                     {
                         $authorid=$row['authorid'];//fieldname
                         $authorname=$row['authorname'];
                         
                         
                         echo "<tr>";
-                        echo "<td>{$authorid}</td>";
-                        echo "<td>{$authorname}</td>";
+                        echo "<td>" . e($authorid) . "</td>";
+                        echo "<td>" . e($authorname) . "</td>";
                        
                         echo "<td>
-                                <a href='author.php?action=delete&aid={$authorid}' class='btn btn-danger' onclick='return confirm('Are you sure?')'>Delete</a> ||
+                                <form action='author.php' method='post' style='display:inline'>" . csrf_field() . "<input type='hidden' name='action' value='delete'><input type='hidden' name='aid' value='{$authorid}'><button type='submit' class='btn btn-danger'>Delete</button></form> ||
                                 <a href='author.php?action=edit&aid={$authorid}' class='btn btn-outline-success' >Edit</a>
                                 </td>";
                         echo "</tr>";

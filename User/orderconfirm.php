@@ -1,27 +1,30 @@
-<?php 
-session_start();
-include '../Admin/connect.php';
+<?php
+require_once dirname(__DIR__) . '/Admin/connect.php';
+require_login();
+
+ 
+
 
 // Check if order_id is set in session
 if (!isset($_SESSION['order_id'])) {
     die("<div class='alert alert-danger text-center'>Order ID not found. Please place an order first.</div>");
 }
 
-$order_id = $_SESSION['order_id'];
+$order_id = (int) $_SESSION['order_id'];
 
 // Fetch order details
-$order_query = "SELECT * FROM orders WHERE orderid = '$order_id'";
-$order_result = mysqli_query($connection, $order_query);
+$order_query = "SELECT * FROM orders WHERE orderid = ? AND customerid = ?";
+$order_result = db_query($connection, $order_query, [$order_id, (int) $_SESSION['user_id']]);
 
-if (!$order_result || mysqli_num_rows($order_result) == 0) {
+if (!$order_result || db_num_rows($order_result) == 0) {
     die("<div class='alert alert-danger text-center'>Order not found.</div>");
 }
 
-$order = mysqli_fetch_assoc($order_result);
-$customer_name = htmlspecialchars($order['deliveryname']);
-$customer_email= htmlspecialchars($order['email']);
-$customer_address = nl2br(htmlspecialchars($order['deliveryaddress']));
-$customer_phone = htmlspecialchars($order['deliveryphone']);
+$order = db_fetch_assoc($order_result);
+$customer_name = e($order['deliveryname']);
+$customer_email= e($order['email']);
+$customer_address = nl2br(e($order['deliveryaddress']));
+$customer_phone = e($order['deliveryphone']);
 ?>
 
 <!DOCTYPE html>
@@ -163,26 +166,26 @@ $customer_phone = htmlspecialchars($order['deliveryphone']);
                                 <?php 
                                 $total = 0;
                                 $details_query = "
-                                    SELECT od.productqty, p.productname, p.price 
+                                    SELECT od.productqty, p.productname, od.unit_price AS price, od.amount 
                                     FROM orderdetails od 
                                     JOIN products p ON od.productid = p.productid 
-                                    WHERE od.orderid = '$order_id'
+                                    WHERE od.orderid = ?
                                 ";
-                                $result = mysqli_query($connection, $details_query);
+                                $result = db_query($connection, $details_query, [$order_id]);
 
-                                if (mysqli_num_rows($result) > 0) {
-                                    while ($item = mysqli_fetch_assoc($result)) {
-                                        $name = htmlspecialchars($item['productname']);
+                                if (db_num_rows($result) > 0) {
+                                    while ($item = db_fetch_assoc($result)) {
+                                        $name = $item['productname'];
                                         $price = $item['price'];
                                         $qty = $item['productqty'];
-                                        $subtotal = $price * $qty;
+                                        $subtotal = $item['amount'];
                                         $total += $subtotal;
                                         echo "
                                         <tr>
-                                            <td><strong>{$name}</strong></td>
-                                            <td>MMK {$price}</td>
-                                            <td><span class='badge bg-primary'>{$qty}x</span></td>
-                                            <td>MMK {$subtotal}</td>
+                                            <td><strong>" . e($name) . "</strong></td>
+                                            <td>MMK " . e($price) . "</td>
+                                            <td><span class='badge bg-primary'>" . e($qty) . "x</span></td>
+                                            <td>MMK " . e($subtotal) . "</td>
                                         </tr>";
                                     }
                                 } else {

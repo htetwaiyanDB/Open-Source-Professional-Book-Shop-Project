@@ -1,5 +1,5 @@
 <?php
-include '../Admin/connect.php';
+require_once dirname(__DIR__) . '/Admin/connect.php';
 $userPage = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -19,7 +19,7 @@ $userPage = basename($_SERVER['PHP_SELF']);
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand text-dark" href="home.php">
-                <img src="../Photos/logo.png" style="width: 100px; height:50px;" alt="Book Palace">
+                <img src="Photos/logo.png" style="width: 100px; height:50px;" alt="Book Palace">
                 
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,14 +28,13 @@ $userPage = basename($_SERVER['PHP_SELF']);
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-dark <?php echo $userPage === 'home.php' ? 'active' : ''; ?>" <?php echo $userPage === 'home.php' ? 'aria-current="page"' : ''; ?> href="home.php">Home</a>
+                        <a class="nav-link text-dark active" aria-current="page" href="home.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo in_array($userPage, ['userindex.php', 'product_detail.php']) ? 'active' : ''; ?>" href="userindex.php">All Books</a>
                     </li>
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                   
-                    <?php else: ?>
+                    <?php if (isset($_SESSION['user_id'])): 
+ else: ?>
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo $userPage === 'newrelease.php' ? 'active' : ''; ?>" href="newrelease.php">Newrelease</a>
                     </li>
@@ -56,13 +55,9 @@ $userPage = basename($_SERVER['PHP_SELF']);
                             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 <?php
                                 if (isset($_GET['category_id']) && $_GET['category_id'] !== '') {
-                                    $stmt = $connection->prepare("SELECT catname FROM categorys WHERE catid = ?");
-                                    $stmt->bind_param("i", $_GET['category_id']);
-                                    $stmt->execute();
-                                    $result = $stmt->get_result();
-                                    $row = $result->fetch_assoc();
-                                    echo htmlspecialchars($row['catname']);
-                                    $stmt->close();
+                                    $result = db_query($connection, 'SELECT catname FROM categorys WHERE catid = ?', [(int) $_GET['category_id']]);
+                                    $row = db_fetch_assoc($result);
+                                    echo e($row['catname'] ?? 'All Categories');
                                 } else {
                                     echo "All Categories";
                                 }
@@ -72,10 +67,10 @@ $userPage = basename($_SERVER['PHP_SELF']);
                                 <li><a class="dropdown-item" href="userindex.php">All Categories</a></li>
                                 <?php
                                 $query = "SELECT * FROM categorys";
-                                $result = mysqli_query($connection, $query);
-                                while ($row = mysqli_fetch_assoc($result)) {
+                                $result = db_query($connection, $query);
+                                while ($row = db_fetch_assoc($result)) {
                                     $selected = (isset($_GET['category_id']) && $row['catid'] == $_GET['category_id']) ? 'active' : '';
-                                    echo "<li><a class='dropdown-item $selected' href='?category_id=" . htmlspecialchars($row['catid']) . "'>" . htmlspecialchars($row['catname']) . "</a></li>";
+                                    echo "<li><a class='dropdown-item $selected' href='userindex.php?category_id=" . e($row['catid']) . "'>" . e($row['catname']) . "</a></li>";
                                 }
                                 ?>
                             </ul>
@@ -86,7 +81,7 @@ $userPage = basename($_SERVER['PHP_SELF']);
                 </ul><br>
                 <ul class="navbar-nav  mb-lg-0">
                     <li class="nav-item">
-                        <a href="addtocart.php" class="nav-link text-dark"><i class="fas fa-cart-shopping" style="font-size: 20px;"></i></a>
+                        <a href="cart.php" class="nav-link text-dark"><i class="fas fa-cart-shopping" style="font-size: 20px;"></i></a>
                     </li>
                 </ul>
 

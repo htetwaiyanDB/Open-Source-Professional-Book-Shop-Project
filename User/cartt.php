@@ -1,22 +1,10 @@
 <?php
-session_start();
-include '../Admin/connect.php';
-include 'userfunction.php';
+require_once dirname(__DIR__) . '/Admin/connect.php';
+require_login();
 
-$cartProducts = [];
-if (!empty($_SESSION['cart'])) {
-    $cartProductIds = array_values(array_filter(array_map('intval', array_keys($_SESSION['cart']))));
-    if ($cartProductIds) {
-        $idList = implode(',', $cartProductIds);
-        $cartResult = mysqli_query(
-            $connection,
-            "SELECT productid, productname, price, photo FROM products WHERE productid IN ($idList)"
-        );
-        while ($product = mysqli_fetch_assoc($cartResult)) {
-            $cartProducts[(int) $product['productid']] = $product;
-        }
-    }
-}
+
+
+require_once __DIR__ . '/userfunction.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +19,7 @@ if (!empty($_SESSION['cart'])) {
     <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
 </head>
 <body>
-<?php include 'userheader.php'; ?>
+<?php include 'userheader.php'; echo render_flash(); ?>
 <div class="container">
 <div class="row mt-5">
 <div class="col-sm-12">
@@ -41,7 +29,7 @@ if (!empty($_SESSION['cart'])) {
 <span class="showname text-danger">
 <?php
                             if (!empty($_SESSION['user'])) {
-                                echo $_SESSION['user'];
+                                echo e($_SESSION['user']);
                             } else {
                                 $_SESSION['user'] = '';
                                 echo " ";
@@ -74,29 +62,34 @@ if (!empty($_SESSION['cart'])) {
          $total = 0;
          foreach ($_SESSION['cart'] as $id => $qty) {
          $id = (int) $id;
-         if (isset($cartProducts[$id])) {
-         $row = $cartProducts[$id];
+                                                    $qty = max(1, (int) $qty);
+         $result = db_query($connection, 'SELECT * FROM products WHERE productid = ?', [$id]);
+ 
+         if ($result && db_num_rows($result) > 0) {
+         $row = db_fetch_assoc($result);
 ?>
         <tr>
-            <td><img src="../Photos/<?php echo htmlspecialchars($row['photo']); ?>" width="100" height="100" class="img img-thumbnail" alt="<?php echo htmlspecialchars($row['productname']); ?>" loading="lazy" decoding="async" /></td>
-            <td><?php echo $row['productname'] ?></td>
+            <td><img src="Photos/<?php echo e($row['photo']); ?>" width="100" height="100" class="img img-thumbnail" /></td>
+            <td><?php echo e($row['productname']); ?></td>
             <td>
         
             <span>
-            <a href="change-qty.php?id=<?php echo $id; ?>&action=increase" class="btn btn-outline-primary btn-sm">+</a>
-            <?php echo $qty ?>
-            <a href="change-qty.php?id=<?php echo $id; ?>&action=decrease" class="btn btn-outline-danger btn-sm">-</a>
+            <form action="change-qty.php" method="post" style="display:inline"><?php echo csrf_field(); ?><input type="hidden" name="id" value="<?php echo (int) $id; ?>"><input type="hidden" name="action" value="increase"><button type="submit" class="btn btn-outline-primary btn-sm">+</button></form>
+            <?php echo e($qty); ?>
+            <form action="change-qty.php" method="post" style="display:inline"><?php echo csrf_field(); ?><input type="hidden" name="id" value="<?php echo (int) $id; ?>"><input type="hidden" name="action" value="decrease"><button type="submit" class="btn btn-outline-danger btn-sm">-</button></form>
             </span>
             </td>
-            <td>MMK-<?php echo $row['price'] ?></td>
+            <td>MMK-<?php echo e($row['price']); ?></td>
             <td>MMK-<?php echo $row['price'] * $qty ?></td>
             <td>
-            <a href="remove.php?id=<?php echo $id ?>" class="btn btn-outline-danger btn-sm">Remove</a>
+            <form action="remove.php" method="post" style="display:inline"><?php echo csrf_field(); ?><input type="hidden" name="id" value="<?php echo (int) $id; ?>"><button type="submit" class="btn btn-outline-danger btn-sm">Remove</button></form>
             </td>
         </tr>
 <?php
                                 $total += $row['price'] * $qty;
-                                }
+                                } else {
+                                echo 'This book is no longer available.';
+                                    }
                                 }
 ?>
 </tbody>
@@ -104,14 +97,14 @@ if (!empty($_SESSION['cart'])) {
 <tfoot>
     <tr>
         <td colspan="4" align="right"><b>Total:</b></td>
-        <td>MMK-<?php echo $total; ?></td>
+        <td>MMK-<?php echo e($total); ?></td>
         <td></td>
     </tr>
 </tfoot>
 </table>
 </div>
 <div class="card-footer">
-<a href="clear.php" class="btn btn-danger">Clear Cart</a>
+<form action="clear.php" method="post" style="display:inline"><?php echo csrf_field(); ?><button type="submit" class="btn btn-danger">Clear Cart</button></form>
 <a href="userindex.php" class="btn btn-dark">Back</a>
 <a href="submitorder.php" class="btn btn-primary">Submit Order</a>
 </div>

@@ -1,14 +1,14 @@
 <?php
-session_start();
-global $connection;
-include 'connect.php';
-$orders = mysqli_query($connection, "
-    SELECT orders.*, user.email AS user_email, item_summary.items
+require_once __DIR__ . '/connect.php';
+require_admin();
+
+$orders = db_query($connection, "
+    SELECT orders.*, users.email AS user_email, item_summary.items
     FROM orders
-    LEFT JOIN user ON orders.customerid = user.userid
+    LEFT JOIN users ON orders.customerid = users.userid
     LEFT JOIN (
         SELECT orderdetails.orderid,
-               GROUP_CONCAT(CONCAT(products.productname, ' [', orderdetails.productqty, ']') SEPARATOR '||') AS items
+               string_agg(products.productname || ' [' || orderdetails.productqty || ']', '||') AS items
         FROM orderdetails
         LEFT JOIN products ON orderdetails.productid = products.productid
         GROUP BY orderdetails.orderid
@@ -61,38 +61,38 @@ $orders = mysqli_query($connection, "
                 <td>Action</td>
             </tr>
             <?php
-            while ($out = mysqli_fetch_array($orders)) {
+            while ($out = db_fetch_assoc($orders)) {
                 if ($out['status'] > 0) {
                     echo '<tr class="table-warning">';
                 } else {
                     echo '<tr>';
                 }
 
-                $orderid = $out['orderid'];
+                $orderid = (int) $out['orderid'];
                 $orderEmail = isset($out['email']) && $out['email'] !== '' ? $out['email'] : ($out['user_email'] ?? '');
 
-                echo '<td>' . $out['orderid'] . '</td>';
-                echo '<td>' . $out['deliveryname'] . '</td>';
-                echo '<td>' . $out['deliveryphone'] . '</td>';
-                echo '<td>' . $orderEmail . '</td>';
-                echo '<td>' . $out['deliveryaddress'] . '</td>';
+                echo '<td>' . $orderid . '</td>';
+                echo '<td>' . e($out['deliveryname']) . '</td>';
+                echo '<td>' . e($out['deliveryphone']) . '</td>';
+                echo '<td>' . e($orderEmail) . '</td>';
+                echo '<td>' . e($out['deliveryaddress']) . '</td>';
                 echo '<td>';
 
                 foreach (explode('||', (string) ($out['items'] ?? '')) as $item) {
                     if ($item !== '') {
-                        echo '<ul class="mb-1"><li>' . htmlspecialchars($item) . '</li></ul>';
+                        echo '<ul class="mb-1"><li>' . e($item) . '</li></ul>';
                     }
                 }
 
                 echo '</td>';
-                echo '<td>' . $out['orderdate'] . '</td>';
+                echo '<td>' . e($out['orderdate']) . '</td>';
 
                 if ($out['status'] > 0) {
-                    echo '<td>' . $out['senddate'] . '</td>';
-                    echo '<td><a href="status.php?id=' . $out['orderid'] . '&status=0" class="btn btn-danger btn-sm">Undo</a></td>';
+                    echo '<td>' . e($out['senddate']) . '</td>';
+                    echo '<td><form action="status.php" method="post" class="d-inline">' . csrf_field() . '<input type="hidden" name="id" value="' . $orderid . '"><input type="hidden" name="status" value="0"><button type="submit" class="btn btn-danger btn-sm">Undo</button></form></td>';
                 } else {
                     echo '<td>----/--/--</td>';
-                    echo '<td><a href="status.php?id=' . $out['orderid'] . '&status=1" class="btn btn-success btn-sm">Delivered</a></td>';
+                    echo '<td><form action="status.php" method="post" class="d-inline">' . csrf_field() . '<input type="hidden" name="id" value="' . $orderid . '"><input type="hidden" name="status" value="1"><button type="submit" class="btn btn-success btn-sm">Delivered</button></form></td>';
                 }
 
                 echo '</tr>';

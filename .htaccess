@@ -40,3 +40,15 @@
         Header set Cache-Control "no-cache"
     </FilesMatch>
 </IfModule>
+
+# Security hardening: never expose private application internals.
+Options -Indexes
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:database|supabase|scripts|includes|tests|tools)(?:/|$) - [F,L]
+</IfModule>

@@ -1,3 +1,6 @@
+<?php
+require_once dirname(__DIR__) . '/Admin/connect.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -108,7 +111,7 @@ footer .end span{
     <div class="footer_main">
   
         <div class="tag">
-            <img src="../Photos/logo4.png" alt="Book Palace" loading="lazy" decoding="async">
+            <img src="Photos/logo4.png">
             
         </div>
   

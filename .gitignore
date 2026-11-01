@@ -4,3 +4,15 @@
 *.log
 Thumbs.db
 .DS_Store
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+php*/php.exe
+php.ini
+__pycache__/
+*.pyc

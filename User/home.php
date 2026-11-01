@@ -1,3 +1,6 @@
+<?php
+require_once dirname(__DIR__) . '/Admin/connect.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

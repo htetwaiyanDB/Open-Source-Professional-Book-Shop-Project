@@ -1,19 +1,24 @@
-<?php 
-session_start();
-$id = $_GET['id'];
- 
-if (isset($_GET['action'])) {
-    if ($_GET['action'] == 'increase') {
-        $_SESSION['cart'][$id]++;
-    } elseif ($_GET['action'] == 'decrease') {
-        if ($_SESSION['cart'][$id] > 1) {
-            $_SESSION['cart'][$id]--;
-        } 
-        else {
+<?php
+require_once dirname(__DIR__) . '/Admin/connect.php';
+require_login();
+verify_csrf();
+$id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+$action = $_POST['action'] ?? '';
+if ($id && isset($_SESSION['cart'][$id])) {
+    $qty = (int) $_SESSION['cart'][$id];
+    if ($action === 'increase') {
+        $stock = db_scalar($connection, 'SELECT qty FROM products WHERE productid = ?', [$id]);
+        if ($stock !== null && $qty < 999 && $qty < (int) $stock) {
+            $_SESSION['cart'][$id] = $qty + 1;
+        } else {
+            flash_error('The requested quantity exceeds available stock.');
+        }
+    } elseif ($action === 'decrease') {
+        if ($qty > 1) {
+            $_SESSION['cart'][$id] = $qty - 1;
+        } else {
             unset($_SESSION['cart'][$id]);
         }
     }
 }
- 
-header("location: cart.php");
-?>
+redirect('cart.php');

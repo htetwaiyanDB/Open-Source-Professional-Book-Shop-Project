@@ -1,10 +1,13 @@
-<?php 
-session_start();
-include '../Admin/connect.php';
+<?php
+require_once dirname(__DIR__) . '/Admin/connect.php';
+require_login();
+
+ 
+
  
 // Check if order_id is set in session
 if (isset($_SESSION['order_id'])) {
-    $order_id = $_SESSION['order_id']; 
+    $order_id = (int) $_SESSION['order_id']; 
 } else {
     die("Order ID not found in session.");
 }
@@ -26,9 +29,10 @@ if (isset($_SESSION['order_id'])) {
 <div class="row">
 <div class="col-md-6">
 <?php
-                $query = "select * from orders where orderid='$order_id'";
-                $go_query = mysqli_query($connection, $query);
-                while ($out = mysqli_fetch_array($go_query)) {
+                $query = "select * from orders where orderid = ? AND customerid = ?";
+                $go_query = db_query($connection, $query, [$order_id, (int) $_SESSION['user_id']]);
+                if (db_num_rows($go_query) === 0) { http_response_code(404); exit('Order not found.'); }
+                while ($out = db_fetch_array($go_query)) {
                     $db_name = $out['deliveryname'];
                     $db_phone = $out['deliveryphone'];
                     $db_address = $out['deliveryaddress'];
@@ -40,10 +44,10 @@ if (isset($_SESSION['order_id'])) {
 <h4 class="card-title">Customer Information</h4>
 </div>
 <div class="card-body">
-<p class="card-text"><strong>Customer Name:</strong> <?php echo $db_name; ?></p>
-<p class="card-text"><strong>Customer Phone:</strong> <?php echo $db_phone; ?></p>
-<p class="card-text"><strong>Customer Address:</strong> <?php echo $db_address ;?></p>
-<p class="card-text"><strong>Customer Email:</strong> <?php echo $db_email ;?></p>
+<p class="card-text"><strong>Customer Name:</strong> <?php echo e($db_name); ?></p>
+<p class="card-text"><strong>Customer Phone:</strong> <?php echo e($db_phone); ?></p>
+<p class="card-text"><strong>Customer Address:</strong> <?php echo e($db_address);?></p>
+<p class="card-text"><strong>Customer Email:</strong> <?php echo e($db_email);?></p>
 </div>
 </div>
 </div>
@@ -63,25 +67,25 @@ if (isset($_SESSION['order_id'])) {
 <tbody>
 <?php 
                     $total = 0;
-                    $query = "select orderdetails.*,products.* from orderdetails left join products on orderdetails.productid=products.productid where orderdetails.orderid='$order_id'";
-                    $go_query = mysqli_query($connection, $query);
-                    while ($out = mysqli_fetch_array($go_query)) {
+                    $query = 'SELECT od.productqty, od.unit_price AS price, od.amount, p.productname FROM orderdetails od JOIN orders o ON o.orderid = od.orderid LEFT JOIN products p ON od.productid = p.productid WHERE od.orderid = ? AND o.customerid = ?';
+                    $go_query = db_query($connection, $query, [$order_id, (int) $_SESSION['user_id']]);
+                    while ($out = db_fetch_array($go_query)) {
                         $product_name = $out['productname'];
                         $price = $out['price'];
                         $qty = $out['productqty'];
-                        $unit_price = $qty * $price;
+                        $unit_price = $out['amount'];
                         $total += $unit_price;
                         echo "<tr>
-<td>{$product_name}<br></td>
-<td>{$price}<br></td>
-<td>{$qty}<br></td>
-<td>{$unit_price}</td>
+<td>" . e($product_name) . "<br></td>
+<td>" . e($price) . "<br></td>
+<td>" . e($qty) . "<br></td>
+<td>" . e($unit_price) . "</td>
 </tr>";
                     }
                     ?>
 <tr>
 <td colspan="3" align="right"><strong>Total Amount:</strong></td>
-<td><?php echo $total; ?></td>
+<td><?php echo e($total); ?></td>
 </tr>
 </tbody>
 </table>

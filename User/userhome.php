@@ -29,7 +29,7 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
 </div>
 
 <div class="main_img">
-    <img src="Photos/table 2.png">
+    <img src="../Photos/table 2.png">
 </div>
 
 </div>
@@ -44,16 +44,16 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
 <div class="container text-center">
 <div class="row g-2">
 <div class="col-6">
-<div class="p-3"><a href=""><img src="Photos/stand 1.png" alt="" width="600px"></a></div>
+<div class="p-3"><a href=""><img src="../Photos/stand 1.png" alt="" width="600px"></a></div>
 </div>
 <div class="col-6">
-<div class="p-3"><a href=""></a><img src="Photos/stand 2.png" alt="" width="600px"></div>
+<div class="p-3"><a href=""></a><img src="../Photos/stand 2.png" alt="" width="600px"></div>
 </div>
 <div class="col-6">
-<div class="p-3"><a href=""><img src="Photos/stand3.png" alt=""  width="600px"></a></div>
+<div class="p-3"><a href=""><img src="../Photos/stand3.png" alt=""  width="600px"></a></div>
 </div>
 <div class="col-6">
-<div class="p-3"><a href=""><img src="Photos/stand 4.png" alt=""  width="600px"></a></div>
+<div class="p-3"><a href=""><img src="../Photos/stand 4.png" alt=""  width="600px"></a></div>
 </div> 
 </div>
 </div>
@@ -67,7 +67,7 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
 <div class="about">
 
 <div class="about_image">
-<img src="Photos/about.png">
+<img src="../Photos/about.png">
 </div>
 <div class="about_tag">
 <h1>About Us</h1>
@@ -89,7 +89,7 @@ id amet eos repellat corrupti harum consectetur, dolorum dolore blanditiis quam 
 <h2 style="text-align: center;">ဝန်ဆောင်မှု(Services)</h2><br>
 <div class="wh-card">
 <div class="card">
-<img src="Photos/Delivery.png" alt="" width="350px" height="200px">
+<img src="../Photos/Delivery.png" alt="" width="350px" height="200px">
 <div class="card__content">
 <p class="card__title">ပို့ဆောင်မှုကြာမြင့်ချိန် (Delivery Time)</p>
 <p class="card__description">အမှာအတည်ပြုပြီးချိန်မှ ၂ နာရီအတွင်း ထုပ်ပိုးပြီးစီး။ (ရုံးဖွင့်ရက်) ၂၄ နာရီ အတွင်း စတင်ပို့ဆောင်ပါမည်….
@@ -99,7 +99,7 @@ id amet eos repellat corrupti harum consectetur, dolorum dolore blanditiis quam 
 </div>
 </div>
 <div class="card">
-<img src="Photos/payment.png" alt="" width="350px" height="200px">
+<img src="../Photos/payment.png" alt="" width="350px" height="200px">
 <div class="card__content">
 
 <p class="card__title">ပို့ဆောင်ခ(Delivery Charges)</p>
@@ -111,7 +111,7 @@ id amet eos repellat corrupti harum consectetur, dolorum dolore blanditiis quam 
 </div>
 </div>
 <div class="card">
-<img src="Photos/gift.png" alt="" width="230px" height="200px">
+<img src="../Photos/gift.png" alt="" width="230px" height="200px">
 <div class="card__content">
 
 <p class="card__title">စာအုပ်ဖုံး စာမှတ်ကတ် အခမဲ့လက်ဆောင်(Gift)</p>
@@ -133,7 +133,7 @@ id amet eos repellat corrupti harum consectetur, dolorum dolore blanditiis quam 
 <div class="footer_main">
 
 <div class="tag">
-<img src="Photos/logo.png">
+<img src="../Photos/logo.png">
 <p>
     
 </p>

@@ -111,7 +111,7 @@ footer .end span{
     <div class="footer_main">
   
         <div class="tag">
-            <img src="Photos/logo4.png">
+            <img src="../Photos/logo4.png">
             
         </div>
   

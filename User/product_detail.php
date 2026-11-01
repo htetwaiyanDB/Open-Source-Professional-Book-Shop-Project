@@ -25,7 +25,7 @@ if (!$product) { http_response_code(404); exit('Book not found.'); }
         <div class="row">
           <div class="col-sm-12">
             <div class="card mb-3">
-              <img src="Photos/<?php echo e($product['photo']); ?>" class="card-img-top mt-3" alt="<?php echo e($product['productname']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+              <img src="../Photos/<?php echo e($product['photo']); ?>" class="card-img-top mt-3" alt="<?php echo e($product['productname']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
           </div>
           <form action="comment.php" method="post">

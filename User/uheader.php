@@ -19,7 +19,7 @@ $userPage = basename($_SERVER['PHP_SELF']);
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand text-dark" href="home.php">
-                <img src="Photos/logo.png" style="width: 100px; height:50px;" alt="Book Palace">
+                <img src="../Photos/logo.png" style="width: 100px; height:50px;" alt="Book Palace">
                 
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

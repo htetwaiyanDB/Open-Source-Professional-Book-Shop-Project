@@ -68,7 +68,7 @@ $num = (int) ceil($total_products / $perpage);
             <div class="col-md-3 mb-3">
               <div class="card" style="border:none;">
                 <a href="product_detail.php?id=<?php echo e($product_id); ?>" class="ms-2 mt-3">
-                  <img src="Photos/<?php echo e($photo); ?>" class="card-img-top img-fluid" alt="<?php echo e($product_name); ?>">
+                  <img src="../Photos/<?php echo e($photo); ?>" class="card-img-top img-fluid" alt="<?php echo e($product_name); ?>">
                 </a>
                 <div class="card-body">
                   <h5 class="card-title"><?php echo e($product_name); ?></h5>

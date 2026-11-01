@@ -69,7 +69,7 @@ require_once __DIR__ . '/userfunction.php';
          $row = db_fetch_assoc($result);
 ?>
         <tr>
-            <td><img src="Photos/<?php echo e($row['photo']); ?>" width="100" height="100" class="img img-thumbnail" /></td>
+            <td><img src="../Photos/<?php echo e($row['photo']); ?>" width="100" height="100" class="img img-thumbnail" /></td>
             <td><?php echo e($row['productname']); ?></td>
             <td>
         

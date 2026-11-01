@@ -8,7 +8,7 @@ function show_result(): void
     $result = db_query($connection, 'SELECT * FROM products WHERE productname ILIKE ? ORDER BY productid LIMIT 100', ['%' . $data . '%']);
     if (db_num_rows($result) === 0) { echo '<p>No matching books found.</p>'; }
     while ($book = db_fetch_assoc($result)) {
-        echo '<div class="col-md-4"><div class="card"><img class="card-img-top" src="Photos/' . e(rawurlencode($book['photo'])) . '" alt="">';
+        echo '<div class="col-md-4"><div class="card"><img class="card-img-top" src="../Photos/' . e(rawurlencode($book['photo'])) . '" alt="">';
         echo '<div class="card-body"><h4>' . e($book['productname']) . '</h4><p>' . e($book['price']) . '</p>';
         echo '<a href="product_detail.php?id=' . (int) $book['productid'] . '">View book</a></div></div></div>';
     }

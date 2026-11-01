@@ -84,13 +84,13 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
     <h1 style="text-align: center;">အရောင်းရဆုံး စာအုပ်များ (Best Seller)</h1>
     <div class="best-seller">
         <div class="best-seller-details">
-            <a href="../Photos/lgbt 8.html"><img src="../Photos/Lgbt 8.jpg" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
+            <a href="userindex.php"><img src="../Photos/Lgbt 8.jpg" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
         </div>
     </div>
 
     <div class="best-seller">
         <div class="best-seller-details">
-            <a href="../Photos/health 10.html"><img src="../Photos/health 10.png" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
+            <a href="userindex.php"><img src="../Photos/health 10.png" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
         </div>
     </div>
 
@@ -119,13 +119,13 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
 
     <div class="best-seller">
         <div class="best-seller-details">
-            <a href="../Photos/yatha 18.html"><img src="../Photos/yatha 18.png" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
+            <a href="userindex.php"><img src="../Photos/yatha 18.png" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
         </div>
     </div>
 
     <div class="best-seller">
         <div class="best-seller-details">
-            <a href="../Photos/children 11.html"><img src="../Photos/children 11.png" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
+            <a href="userindex.php"><img src="../Photos/children 11.png" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
         </div>
     </div>
 

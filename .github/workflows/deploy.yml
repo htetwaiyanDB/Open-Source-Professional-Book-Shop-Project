@@ -86,7 +86,12 @@ jobs:
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          code=$(curl -sS -o /dev/null -w '%{http_code}' \
-            -H "Host: ${APP_HOST}" "http://${DEPLOY_HOST}/User/home.php")
-          echo "Origin returned HTTP ${code}"
-          test "$code" = "200"
+          page=$(curl -sS -o /dev/null -w '%{http_code}' \
+            --resolve "${APP_HOST}:443:${DEPLOY_HOST}" \
+            "https://${APP_HOST}/User/home.php")
+          asset=$(curl -sS -o /dev/null -w '%{http_code}' \
+            --resolve "${APP_HOST}:443:${DEPLOY_HOST}" \
+            "https://${APP_HOST}/Photos/logo.png")
+          echo "storefront=${page} asset=${asset}"
+          test "$page" = "200"
+          test "$asset" = "200"

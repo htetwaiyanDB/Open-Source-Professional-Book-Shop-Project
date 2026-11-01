@@ -84,6 +84,8 @@ session_start();
     box-shadow: none;
   }
     </style>
+    <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
+    <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
 </head>
 <body>
 

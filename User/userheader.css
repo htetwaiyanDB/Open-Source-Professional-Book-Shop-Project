@@ -1,0 +1,67 @@
+/* Style for the dropdown button */
+#categoryDropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-menu a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-menu a:hover {
+    background-color: #ddd;
+}
+
+/* Show the dropdown menu on hover */
+#categoryDropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.navbar .nav-link {
+    position: relative;
+    transition: background-color 180ms ease, opacity 180ms ease;
+}
+
+.navbar .nav-link::after {
+    content: "";
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.2rem;
+    left: 0.5rem;
+    height: 2px;
+    border-radius: 999px;
+    background: #089da1;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus-visible {
+    background-color: rgba(8, 157, 161, 0.08);
+}
+
+.navbar .nav-link:hover::after,
+.navbar .nav-link:focus-visible::after,
+.navbar .nav-link.active::after {
+    transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navbar .nav-link,
+    .navbar .nav-link::after {
+        transition: none;
+    }
+}

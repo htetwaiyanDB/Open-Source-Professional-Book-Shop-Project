@@ -70,12 +70,23 @@ input:valid~label {
     color: #fff;
 }
 
-.inputbox ion-icon {
+.inputbox ion-icon,
+.inputbox .login-icon {
     position: absolute;
     right: 8px;
     color: #fff;
     font-size: 1.2em;
     top: 20px;
+}
+
+.inputbox .login-icon {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .forget {

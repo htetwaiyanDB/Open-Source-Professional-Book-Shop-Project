@@ -1,0 +1,91 @@
+:root {
+    --page-enter-duration: 170ms;
+    --page-exit-duration: 70ms;
+    --page-motion-easing: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+    background: #ffffff;
+}
+
+body {
+    animation: book-palace-page-enter var(--page-enter-duration) var(--page-motion-easing) both;
+    backface-visibility: hidden;
+}
+
+html.is-page-leaving body {
+    animation: book-palace-page-exit var(--page-exit-duration) ease-in both;
+    pointer-events: none;
+}
+
+@keyframes book-palace-page-enter {
+    from {
+        opacity: 0.92;
+        transform: translate3d(0, 3px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes book-palace-page-exit {
+    from {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        opacity: 0.96;
+        transform: translate3d(0, -1px, 0);
+    }
+}
+
+/* Modern Chromium can animate the old and new documents without delaying navigation. */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: book-palace-native-exit 90ms ease-in both;
+}
+
+::view-transition-new(root) {
+    animation: book-palace-native-enter 170ms var(--page-motion-easing) both;
+}
+
+@keyframes book-palace-native-exit {
+    from { opacity: 1; }
+    to { opacity: 0.94; }
+}
+
+@keyframes book-palace-native-enter {
+    from {
+        opacity: 0.94;
+        transform: translate3d(0, 2px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@supports (view-transition-name: root) {
+    body,
+    html.is-page-leaving body {
+        animation: none;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body,
+    html.is-page-leaving body {
+        animation: none;
+        transform: none;
+    }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+    }
+}

@@ -1,10 +1,9 @@
 <?php
-session_start();
-include 'connect.php';
-include 'function.php';
-
 if(isset($_POST['btnlogin']))
 {
+    session_start();
+    require_once 'connect.php';
+    require_once 'function.php';
     admin_login();//function call
 }
 
@@ -16,9 +15,9 @@ if(isset($_POST['btnlogin']))
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Document</title>
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <link rel='stylesheet' href='.css'>
+    <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
+    <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
 </head>
 
 <body>
@@ -27,10 +26,10 @@ if(isset($_POST['btnlogin']))
                 <div class="form-value">
                     <form action="" method="post">
                         <h2>Login</h2>
-                        <div class="inputbox"> <ion-icon name="mail-outline"></ion-icon> <input type="text" name="username" required>
+                        <div class="inputbox"> <svg class="login-icon" aria-hidden="true"><use href="../User/auth-icons.svg#mail"></use></svg> <input type="text" name="username" required>
                             <label>Email / Username</label>
                         </div>
-                        <div class="inputbox"> <ion-icon name="lock-closed-outline"></ion-icon> <input type="password" name="password"
+                        <div class="inputbox"> <svg class="login-icon" aria-hidden="true"><use href="../User/auth-icons.svg#lock"></use></svg> <input type="password" name="password"
                                 required> <label>Password</label> </div>
                         <button type="submit" name="btnlogin">Login</button>
     

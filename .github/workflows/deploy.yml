@@ -1,0 +1,92 @@
+name: Deploy bookshop demo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: demoecom-production
+  cancel-in-progress: false
+
+env:
+  APP_HOST: demoecom.winterarc.asia
+
+jobs:
+  lint:
+    name: PHP lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP CLI
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq php-cli
+
+      - name: Lint every PHP file
+        run: |
+          find . -type f -name '*.php' -not -path './.git/*' -print0 \
+            | xargs -0 -n1 -P4 php -l > /tmp/php-lint.log 2>&1 \
+            || { grep -v 'No syntax errors detected' /tmp/php-lint.log; exit 1; }
+          echo "Linted $(wc -l < /tmp/php-lint.log) PHP files."
+
+  deploy:
+    name: Deploy to demo server
+    needs: lint
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://demoecom.winterarc.asia
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release archive
+        run: |
+          tar -czf "$RUNNER_TEMP/bookshop-${GITHUB_SHA}.tar.gz" \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude=.env \
+            --exclude=__pycache__ \
+            --exclude='*.pyc' \
+            .
+          ls -lh "$RUNNER_TEMP/bookshop-${GITHUB_SHA}.tar.gz"
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p "${DEPLOY_PORT:-22}" -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          scp -P "${DEPLOY_PORT:-22}" \
+            "$RUNNER_TEMP/bookshop-${GITHUB_SHA}.tar.gz" \
+            "${DEPLOY_USER}@${DEPLOY_HOST}:/tmp/bookshop-${GITHUB_SHA}.tar.gz"
+
+      - name: Activate release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          ssh -p "${DEPLOY_PORT:-22}" "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "sudo -n /usr/local/bin/bookshop-deploy /tmp/bookshop-${GITHUB_SHA}.tar.gz"
+
+      - name: Smoke test origin
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          code=$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H "Host: ${APP_HOST}" "http://${DEPLOY_HOST}/User/home.php")
+          echo "Origin returned HTTP ${code}"
+          test "$code" = "200"

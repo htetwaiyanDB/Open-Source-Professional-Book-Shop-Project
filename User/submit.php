@@ -19,15 +19,34 @@ $name = trim((string) ($_POST['username'] ?? ''));
 $email = trim((string) ($_POST['email'] ?? ''));
 $phone = trim((string) ($_POST['phone'] ?? ''));
 $address = trim((string) ($_POST['address'] ?? ''));
+// 'cod' (cash on delivery) and 'mmqr' (demo QR) are the only accepted methods.
+$payment = (string) ($_POST['payment_method'] ?? 'cod');
+if (!in_array($payment, ['cod', 'mmqr'], true)) {
+    flash_error('Choose cash on delivery or MMQR.'); redirect('submitorder.php');
+}
 if ($name === '' || $phone === '' || $address === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     flash_error('Please enter complete delivery details and a valid email.'); redirect('submitorder.php');
 }
+$retryable = ['P0001', '23514', '22023', '40001', '40P01', '55P03'];
+$cart_json = json_encode($items, JSON_THROW_ON_ERROR);
 try {
-    $id = db_scalar($connection, 'SELECT checkout(?::jsonb, ?, ?, ?, ?)', [json_encode($items, JSON_THROW_ON_ERROR), $name, $email, $phone, $address]);
+    $id = db_scalar($connection, 'SELECT checkout(?::jsonb, ?, ?, ?, ?, ?)', [$cart_json, $name, $email, $phone, $address, $payment]);
 } catch (PDOException $error) {
-    if (!in_array($error->getCode(), ['P0001', '23514', '22023', '40001', '40P01', '55P03'], true)) { throw $error; }
-    flash_error('The order could not be placed. Check stock and delivery details, then try again.'); redirect('cart.php');
+    if ($error->getCode() !== '42883') {
+        if (!in_array($error->getCode(), $retryable, true)) { throw $error; }
+        flash_error('The order could not be placed. Check stock and delivery details, then try again.'); redirect('cart.php');
+    }
+    // 42883: the payment-method migration is not applied on this database yet, so
+    // fall back to the previous five-argument signature and keep the chosen method
+    // in the session only (the stored order then uses the 'cod' default).
+    try {
+        $id = db_scalar($connection, 'SELECT checkout(?::jsonb, ?, ?, ?, ?)', [$cart_json, $name, $email, $phone, $address]);
+    } catch (PDOException $fallback) {
+        if (!in_array($fallback->getCode(), $retryable, true)) { throw $fallback; }
+        flash_error('The order could not be placed. Check stock and delivery details, then try again.'); redirect('cart.php');
+    }
 }
 $_SESSION['order_id'] = (int) $id;
-unset($_SESSION['cart']);
-redirect('orderconfirm.php');
+$_SESSION['order_payment'] = $payment;
+unset($_SESSION['cart'], $_SESSION['order_paid_demo']);
+redirect($payment === 'mmqr' ? 'orderpay.php' : 'orderconfirm.php');

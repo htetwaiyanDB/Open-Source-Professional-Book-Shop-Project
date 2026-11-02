@@ -108,6 +108,12 @@ SELECT bookshop.checkout('[{"productid":900001,"qty":1}]','A','','123','A');
 ROLLBACK TO SAVEPOINT rollback_checkout;
 SELECT pg_temp.assert_true((SELECT qty=3 FROM bookshop.products WHERE productid=900001),'outer transaction rollback restores stock');
 SELECT pg_temp.assert_true((SELECT count(*)=1 FROM bookshop.orders WHERE customerid=900001),'outer transaction rollback restores orders');
+-- Payment method is written by the definer only and limited to cod/mmqr.
+SELECT bookshop.checkout('[{"productid":900001,"qty":1}]','A','','123','A','mmqr') AS order_mmqr \gset
+SELECT pg_temp.assert_true((SELECT payment_method='mmqr' FROM bookshop.orders WHERE orderid=:order_mmqr),'checkout stores mmqr payment method');
+SELECT pg_temp.assert_true((SELECT payment_method='cod' FROM bookshop.orders WHERE orderid=:order_a),'checkout defaults to cash on delivery');
+SELECT pg_temp.expect_error('SELECT bookshop.checkout(''[{"productid":900001,"qty":1}]''::jsonb,''A'','''',''123'',''A'',''card'')','22023');
+SELECT pg_temp.expect_error('UPDATE bookshop.orders SET payment_method=''cod''','42501');
 
 SELECT pg_catalog.set_config('app.user_id','900002',true);
 SELECT pg_temp.assert_true((SELECT count(*)=0 FROM bookshop.orders WHERE orderid=:order_a),'cross-user order hidden');

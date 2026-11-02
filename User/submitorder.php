@@ -74,7 +74,24 @@ $address = $user['address'];
 
                 </div>
 
-                <p class="text-muted">No online payment is collected here. Payment and delivery will be arranged separately. Never enter card numbers or banking credentials.</p>
+                <fieldset class="mb-3">
+                    <legend class="form-label fs-6">Payment Method</legend>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="payment_method" id="payment_cod" value="cod" checked>
+                        <label class="form-check-label" for="payment_cod">
+                            <strong>Cash on Delivery</strong> &mdash; pay the courier when your books arrive.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment_method" id="payment_mmqr" value="mmqr">
+                        <label class="form-check-label" for="payment_mmqr">
+                            <strong>MMQR</strong> &mdash; scan with KBZPay, WavePay, AYA Pay, CB Pay or any MMQR app.
+                            <span class="badge bg-warning text-dark">Demo</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <p class="text-muted">The MMQR option is a demo: a sample QR is shown after you submit and no money moves. Never enter card numbers or banking credentials.</p>
 
                 <input type="submit" name="submit" value="Submit" class="btn btn-primary" />
 

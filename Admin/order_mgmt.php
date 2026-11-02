@@ -56,6 +56,7 @@ $orders = db_query($connection, "
                 <td>Email</td>
                 <td>Customer Address</td>
                 <td>Item(s)</td>
+                <td>Payment</td>
                 <td>Ordered_Date</td>
                 <td>Sended_Date</td>
                 <td>Action</td>
@@ -85,6 +86,10 @@ $orders = db_query($connection, "
                 }
 
                 echo '</td>';
+                $paymentMethod = (string) ($out['payment_method'] ?? 'cod');
+                echo '<td>' . ($paymentMethod === 'mmqr'
+                    ? '<span class="badge bg-info text-dark">MMQR</span>'
+                    : '<span class="badge bg-secondary">COD</span>') . '</td>';
                 echo '<td>' . e($out['orderdate']) . '</td>';
 
                 if ($out['status'] > 0) {

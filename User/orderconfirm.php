@@ -120,6 +120,24 @@ $customer_phone = e($order['deliveryphone']);
                 <p><strong>Order ID:</strong> <code><?= $order_id ?></code></p>
             </div>
 
+            <?php
+            $payment_method = ($_SESSION['order_payment'] ?? 'cod') === 'mmqr' ? 'mmqr' : 'cod';
+            $paid_demo = !empty($_SESSION['order_paid_demo']);
+            ?>
+            <div class="alert <?= $payment_method === 'mmqr' ? 'alert-info' : 'alert-secondary' ?>" role="alert">
+                <strong>Payment method:</strong>
+                <?php if ($payment_method === 'mmqr'): ?>
+                    <span class="badge bg-dark">MMQR (demo)</span>
+                    <?= $paid_demo
+                        ? 'Demo payment recorded. No real money was moved.'
+                        : 'No real payment was taken; this is a demo QR.' ?>
+                    <a href="orderpay.php" class="alert-link">Show the demo QR again</a>.
+                <?php else: ?>
+                    <span class="badge bg-secondary">Cash on Delivery</span>
+                    Please have the exact amount ready for the courier.
+                <?php endif; ?>
+            </div>
+
             <!-- Customer Info Card -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white d-flex align-items-center">

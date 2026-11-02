@@ -13,7 +13,7 @@ PostgreSQL-only and server-rendered.
 | Data access | Server-side PHP PDO (`pdo_pgsql`) with native prepared statements |
 | Authentication | Existing PHP username/password sessions; `password_hash`/`password_verify` (bcrypt) |
 | Authorization | RLS policies plus stored `role`; admin pages call `require_admin()` |
-| Checkout | `bookshop.checkout(...)` derives the customer from the session, locks stock, snapshots server prices, and is atomic |
+| Checkout | `bookshop.checkout(...)` derives the customer from the session, records the payment method (cash on delivery or demo MMQR), locks stock, snapshots server prices, and is atomic |
 | Browser API | No Supabase Data API or Auth usage; no browser keys are shipped |
 
 The `bookshop` schema is intentionally **not** exposed through PostgREST. PHP is
@@ -132,12 +132,18 @@ psql ... -U postgres -f tests/database_security.sql
 `tests/database_security.sql` runs as the real runtime role and covers schema
 ownership, RLS, grants, anonymous access, cross-user isolation, password
 column denial, role escalation, malformed session IDs, checkout validation,
-server pricing, stock checks and rollback. It rolls back all fixtures.
+payment-method validation, server pricing, stock checks and rollback. It rolls
+back all fixtures.
 
 ## Operational notes
 
 - Rotate the runtime database password periodically and after any leak.
 - Enable Supabase backups/point-in-time recovery appropriate to the plan.
 - Order status changes set `senddate`; order deletion does not restore stock.
+- MMQR checkout is a **demo**: `User/orderpay.php` renders a browser-generated QR
+  from `assets/vendor/qrcode/` and a "simulate a successful payment" button that
+  only sets a session flag. `orders.payment_method` stores `cod` or `mmqr`, but
+  nothing marks an order as paid until a real provider (for example MyanMyanPay)
+  and its verified webhook are wired in.
 - `database/bookpalace.sql` is a **sanitized catalog-only** historical MySQL
   dump used by `scripts/convert_catalog.py`; never import it as-is.

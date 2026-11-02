@@ -7,11 +7,14 @@ orderdetails, comments and feedback were removed. Git history still has the
 original file, so rotate any credential that ever appeared there. Never import
 that dump as-is into PostgreSQL.
 
-`schema.sql` is the canonical schema source, copied byte-for-byte to
-`supabase/migrations/20261101222500_private_bookshop.sql`. Apply that migration
-once through the Supabase CLI (`supabase db push`) or the dashboard SQL editor
-as the project owner (`postgres`), then run `supabase/seed.sql` if catalog data
-is wanted. Do not apply both the source and the migration to one database.
+`schema.sql` is the canonical schema source and matches the state produced by
+applying every file in `supabase/migrations/` in filename order:
+`20261101222500_private_bookshop.sql` is a byte-for-byte copy of `schema.sql` at
+its original revision and later revisions are incremental (for example
+`20261102160000_order_payment_method.sql`). Apply the migrations once through the
+Supabase CLI (`supabase db push`) or the dashboard SQL editor as the project owner
+(`postgres`), then run `supabase/seed.sql` if catalog data is wanted. Do not apply
+both the source and the migration to one database.
 
 The migration must run as the Supabase `postgres` role, which has `CREATEROLE`
 but is **not** a superuser. It therefore creates `bookshop_app` with safe
@@ -58,7 +61,7 @@ and are executable only by `bookshop_app` (plus their owner):
 | `register_user(p_username text,p_hash text,p_email text,p_phone text,p_address text)` | New bigint ID, accepts PHP bcrypt hash and **forces user role** |
 | `admin_create_user(same five parameters,p_role text)` | New bigint ID, requires current DB administrator |
 | `admin_delete_user(p_userid bigint)` | Void; requires admin, cannot delete self, orders FK prevents loss of history |
-| `checkout(p_cart jsonb,p_deliveryname text,p_email text,p_deliveryphone text,p_address text)` | New bigint order ID, requires an existing current DB user |
+| `checkout(p_cart jsonb,p_deliveryname text,p_email text,p_deliveryphone text,p_address text,p_payment_method text)` | New bigint order ID, requires an existing current DB user; `p_payment_method` defaults to `'cod'` |
 
 Users direct SELECT is column-limited to `userid,username,email,phone,address,role`
 and row-limited to self/admin. **`SELECT *` and direct `password` SELECT fail even
@@ -80,6 +83,16 @@ runtime insert on orders/details or update on details exists. Admins may update
 only order `status` (0/1) and `senddate` or delete orders, which cascades details;
 deletion does not imply an inventory refund. A cancellation/refund feature
 requires its own reviewed stock-accounting function.
+
+`p_payment_method` must be `'cod'` (cash on delivery, the default) or `'mmqr'`
+and is stored on `bookshop.orders.payment_method`; anything else raises `22023`.
+The column is read-only for the runtime role: it is written only by the definer,
+and `bookshop_app` still may update just `status` and `senddate`. The MMQR option
+in the storefront is currently a demo QR rendered in the browser: it does not call
+a payment provider, does not mark an order paid, and no card or banking
+credentials are collected. Wiring a real provider (for example MyanMyanPay)
+requires a provider-only table plus a webhook endpoint that verifies signatures,
+and a reviewed stock-accounting path for refunds and cancellations.
 
 Catalog is publicly readable through the PHP runtime, admin-write only. Comment
 content is public; insert requires logged-in matching `userid`; edits/deletion

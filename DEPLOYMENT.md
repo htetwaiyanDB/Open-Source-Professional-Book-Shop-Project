@@ -107,3 +107,28 @@ ADMIN_DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com ADMIN_DB_PORT=5432 \
 ```text
 curl -s -o /dev/null -w '%{http_code}\n' https://demoecom.winterarc.asia/User/home.php
 ```
+
+## Schema migrations
+
+`database/schema.sql` is the full canonical schema; every change after the first
+revision ships as its own file in `supabase/migrations/` and is applied once.
+Use the Supabase SQL editor as `postgres`, or the operator script below, which
+takes the same `ADMIN_DB_*` credentials as the password rotation (the runtime
+login `bookshop_app` has no DDL rights):
+
+```text
+cd /var/www/demoecom
+read -rsp 'Supabase owner password: ' ADMIN_DB_PASSWORD; echo
+export ADMIN_DB_PASSWORD
+ADMIN_DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com ADMIN_DB_PORT=5432 \
+  ADMIN_DB_NAME=postgres ADMIN_DB_USER=postgres.<project-ref> \
+  ADMIN_DB_SSLMODE=verify-full \
+  ADMIN_DB_SSLROOTCERT=/etc/ssl/certs/supabase-pooler-ca.crt \
+  php8.2 scripts/apply-migration.php supabase/migrations/20261102160000_order_payment_method.sql
+```
+
+That migration adds `orders.payment_method` (`cod`/`mmqr`) and replaces
+`bookshop.checkout()` with a six-argument version whose last argument defaults to
+`cod`. Checkout keeps working before it is applied: `User/submit.php` falls back
+to the five-argument signature on `42883` and keeps the chosen method in the
+session only, so apply the migration before relying on the admin Payment column.

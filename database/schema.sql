@@ -98,7 +98,8 @@ CREATE TABLE bookshop.orders (
   orderdate date NOT NULL DEFAULT CURRENT_DATE,
   status integer NOT NULL DEFAULT 0 CHECK (status IN (0,1)),
   senddate date,
-  deliveryaddress text NOT NULL CHECK (char_length(btrim(deliveryaddress)) BETWEEN 1 AND 1000)
+  deliveryaddress text NOT NULL CHECK (char_length(btrim(deliveryaddress)) BETWEEN 1 AND 1000),
+  payment_method text NOT NULL DEFAULT 'cod' CHECK (payment_method IN ('cod','mmqr'))
 );
 CREATE TABLE bookshop.orderdetails (
   orderid bigint NOT NULL REFERENCES bookshop.orders(orderid) ON DELETE CASCADE,
@@ -178,7 +179,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION bookshop.checkout(p_cart jsonb, p_deliveryname text, p_email text, p_deliveryphone text, p_address text)
+CREATE FUNCTION bookshop.checkout(p_cart jsonb, p_deliveryname text, p_email text, p_deliveryphone text, p_address text, p_payment_method text DEFAULT 'cod')
 RETURNS bigint LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $fn$
 DECLARE
   customer bigint := bookshop.current_user_id();
@@ -218,6 +219,9 @@ BEGIN
     OR p_email IS NULL OR char_length(p_email) > 254 THEN
     RAISE EXCEPTION 'Invalid customer delivery details' USING ERRCODE = '22023';
   END IF;
+  IF p_payment_method IS NULL OR p_payment_method NOT IN ('cod','mmqr') THEN
+    RAISE EXCEPTION 'Unsupported payment method' USING ERRCODE = '22023';
+  END IF;
   -- Acquire every inventory lock in deterministic ID order before any write.
   FOR stock IN
     SELECT p.productid,p.qty FROM bookshop.products p
@@ -235,8 +239,8 @@ BEGIN
   IF n <> pg_catalog.jsonb_array_length(p_cart) THEN
     RAISE EXCEPTION 'Unknown cart product' USING ERRCODE = '22023';
   END IF;
-  INSERT INTO bookshop.orders(customerid,deliveryname,email,deliveryphone,deliveryaddress)
-    VALUES(customer,pg_catalog.btrim(p_deliveryname),p_email,pg_catalog.btrim(p_deliveryphone),pg_catalog.btrim(p_address))
+  INSERT INTO bookshop.orders(customerid,deliveryname,email,deliveryphone,deliveryaddress,payment_method)
+    VALUES(customer,pg_catalog.btrim(p_deliveryname),p_email,pg_catalog.btrim(p_deliveryphone),pg_catalog.btrim(p_address),p_payment_method)
     RETURNING orderid INTO new_order;
   INSERT INTO bookshop.orderdetails(orderid,productid,productqty,unit_price,amount)
     SELECT new_order,p.productid,c.qty,p.price,p.price*c.qty
@@ -301,7 +305,7 @@ GRANT USAGE ON SEQUENCE bookshop.author_authorid_seq,bookshop.categorys_catid_se
   bookshop.comments_id_seq,bookshop.feedback_feedbackid_seq TO bookshop_app;
 GRANT EXECUTE ON FUNCTION bookshop.current_user_id(),bookshop.is_admin(),bookshop.login_record(text),
   bookshop.register_user(text,text,text,text,text),bookshop.admin_create_user(text,text,text,text,text,text),
-  bookshop.admin_delete_user(bigint),bookshop.checkout(jsonb,text,text,text,text) TO bookshop_app;
+  bookshop.admin_delete_user(bigint),bookshop.checkout(jsonb,text,text,text,text,text) TO bookshop_app;
 
 DO $api$
 DECLARE r text;

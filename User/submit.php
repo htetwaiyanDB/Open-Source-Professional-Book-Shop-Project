@@ -49,4 +49,5 @@ try {
 $_SESSION['order_id'] = (int) $id;
 $_SESSION['order_payment'] = $payment;
 unset($_SESSION['cart'], $_SESSION['order_paid_demo']);
-redirect($payment === 'mmqr' ? 'orderpay.php' : 'orderconfirm.php');
+// The MMQR QR now opens as a popup on the receipt page itself.
+redirect('orderconfirm.php' . ($payment === 'mmqr' ? '?pay=1' : ''));

@@ -169,10 +169,12 @@ back all fixtures.
 - Rotate the runtime database password periodically and after any leak.
 - Enable Supabase backups/point-in-time recovery appropriate to the plan.
 - Order status changes set `senddate`; order deletion does not restore stock.
-- MMQR checkout is a **demo**: `User/orderpay.php` renders a browser-generated QR
-  from `assets/vendor/qrcode/` and a "simulate a successful payment" button that
-  only sets a session flag. `orders.payment_method` stores `cod` or `mmqr`, but
-  nothing marks an order as paid until a real provider (for example MyanMyanPay)
-  and its verified webhook are wired in.
+- MMQR checkout is a **demo**: `User/orderconfirm.php` opens the browser-generated
+  QR (from `assets/vendor/qrcode/`) in a Bootstrap modal popup right after an MMQR
+  order is placed, and its "I have paid" button only sets a session flag
+  (`User/orderpay.php` now redirects to that popup to keep old links working).
+  `orders.payment_method` stores `cod` or `mmqr`, but nothing marks an order as
+  paid until a real provider (for example MyanMyanPay) and its verified webhook
+  are wired in.
 - `database/bookpalace.sql` is a **sanitized catalog-only** historical MySQL
   dump used by `scripts/convert_catalog.py`; never import it as-is.

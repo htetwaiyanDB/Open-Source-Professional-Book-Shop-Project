@@ -98,6 +98,35 @@ php -S 127.0.0.1:8099 scripts/dev-router.php
 Apache/shared hosting uses `.htaccess` instead of the router; both block
 `.env`, migrations, tests and tooling, and uploaded-file execution.
 
+### Laragon on Windows (hosted Supabase)
+
+Laragon already generated the virtual host, so the app runs at
+`http://bookpalace.test` once two things are true:
+
+1. **PHP has `pdo_pgsql`.** Laragon ships it disabled: uncomment
+   `extension=pdo_pgsql` and `extension=pgsql` in
+   `c:\laragon\bin\php\<version>\php.ini`, then restart Apache.
+2. **`.env` holds the runtime login** — `APP_ENV=local`, the session-pooler host
+   on port 5432, `DB_USER=bookshop_app.<project-ref>`, the `bookshop_app`
+   password, and `DB_SSLROOTCERT` pointing at `.secrets/prod-ca-2021.crt`.
+   `APP_ENV=local` matters: otherwise the session cookie is marked `Secure` and
+   sign-in silently fails over plain HTTP.
+
+XAMPP's PHP already ships `pdo_pgsql`, so the built-in server is a one-liner
+from the project root when Laragon is not running:
+
+```text
+php -S 127.0.0.1:8099 scripts/dev-router.php
+```
+
+Apply a pending migration from the local CLI with the owner credentials in
+`ADMIN_DB_*`; add `--dry-run` first to validate the configuration:
+
+```text
+php scripts/apply-migration.php supabase/migrations/<file>.sql --dry-run
+php scripts/apply-migration.php supabase/migrations/<file>.sql
+```
+
 ## Security model
 
 - **RLS is always on** for all nine tables. Anonymous requests can read the

@@ -85,5 +85,25 @@ tail -f /var/log/nginx/demoecom.error.log
 certbot renew --dry-run
 ```
 
-To rotate the runtime database password: change it in Supabase, update
-`DB_PASSWORD` in `/var/www/demoecom/.env`, then `systemctl reload php8.2-fpm`.
+To rotate the runtime database password, run the operator script as root on the
+server (it reads the migration owner credentials from `ADMIN_DB_*`, rewrites
+`DB_PASSWORD` in `/var/www/demoecom/.env`, and verifies the new login):
+
+```text
+cd /var/www/demoecom
+read -rsp 'Supabase owner password: ' ADMIN_DB_PASSWORD; echo
+read -rsp 'New bookshop_app password: ' BOOKSHOP_DB_PASSWORD; echo
+export ADMIN_DB_PASSWORD BOOKSHOP_DB_PASSWORD
+ADMIN_DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com ADMIN_DB_PORT=5432 \
+  ADMIN_DB_NAME=postgres ADMIN_DB_USER=postgres.<project-ref> \
+  ADMIN_DB_SSLMODE=verify-full \
+  ADMIN_DB_SSLROOTCERT=/etc/ssl/certs/supabase-pooler-ca.crt \
+  php8.2 scripts/set-db-password.php --write-env
+```
+
+`.env` is re-read on every request, so no reload is needed; a
+`systemctl reload php8.2-fpm` afterwards is harmless. Verify with:
+
+```text
+curl -s -o /dev/null -w '%{http_code}\n' https://demoecom.winterarc.asia/User/home.php
+```

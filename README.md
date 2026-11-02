@@ -45,6 +45,14 @@ administrator pages live in `Admin/`, shared database/session code is in
    ```
    Or in the SQL editor: `ALTER ROLE bookshop_app PASSWORD '...';` (keep the
    password in a secret manager, never in Git).
+   The same can be done from the CLI with the migration owner credentials in
+   `ADMIN_DB_*`; `--write-env` also updates `DB_PASSWORD` in `.env`:
+   ```text
+   BOOKSHOP_DB_PASSWORD='...' php scripts/set-db-password.php --write-env
+   ```
+   Add `--dry-run` first to validate the `ADMIN_DB_*` configuration without
+   changing anything. The new password is read from `BOOKSHOP_DB_PASSWORD` or a
+   hidden prompt, never from an argument.
 5. Copy `.env.example` to `.env` (untracked) and fill in the **session pooler**
    connection values:
    - Host/port: session pooler on **5432** (supports native prepares).

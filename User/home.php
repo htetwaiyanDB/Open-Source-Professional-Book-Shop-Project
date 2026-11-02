@@ -149,31 +149,22 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
 
     <h2 style="text-align: center;">ဝန်ဆောင်မှုများ (Services)</h2><br>
     <div class="wh-card">
-        <div class="card service-card">
+        <div class="card service-card" aria-controls="service-delivery-time">
             <img src="../Photos/Delivery.png" alt="" width="350" height="200" loading="lazy" decoding="async">
-            <button class="service-card__toggle" type="button" aria-expanded="false" aria-controls="service-delivery-time" data-open-label="အသေးစိတ်ကြည့်ရန်" data-close-label="ပိတ်ရန်">
-                <span>အသေးစိတ်ကြည့်ရန်</span><i class="fas fa-chevron-down" aria-hidden="true"></i>
-            </button>
             <div class="card__content" id="service-delivery-time">
                 <p class="card__title">ပို့ဆောင်မှုကြာမြင့်ချိန် (Delivery Time)</p>
                 <p class="card__description">အမှာအတည်ပြုပြီးချိန်မှ ၂ နာရီအတွင်း ထုပ်ပိုးပြီးစီးပါသည်။ ရုံးဖွင့်ရက်များတွင် ၂၄ နာရီအတွင်း စတင်ပို့ဆောင်ပေးပါသည်။ ရန်ကုန်မြို့တွင်း ၃ ရက်မှ ၅ ရက်အတွင်း၊ နယ်မြို့များသို့ ၅ ရက်မှ ၇ ရက်အတွင်း၊ ပြည်ပနိုင်ငံများသို့ ၅ ရက်မှ ၁၀ ရက်အတွင်း စာအုပ်များရောက်ရှိနိုင်ပါသည်။</p>
             </div>
         </div>
-        <div class="card service-card">
+        <div class="card service-card" aria-controls="service-delivery-charge">
             <img src="../Photos/payment.png" alt="" width="350" height="200" loading="lazy" decoding="async">
-            <button class="service-card__toggle" type="button" aria-expanded="false" aria-controls="service-delivery-charge" data-open-label="အသေးစိတ်ကြည့်ရန်" data-close-label="ပိတ်ရန်">
-                <span>အသေးစိတ်ကြည့်ရန်</span><i class="fas fa-chevron-down" aria-hidden="true"></i>
-            </button>
             <div class="card__content" id="service-delivery-charge">
                 <p class="card__title">ပို့ဆောင်ခ (Delivery Charges)</p>
                 <p class="card__description">ပြည်တွင်းပို့ဆောင်မှုအတွက် ပထမစာအုပ် ၂၀၀၀ ကျပ်နှင့် ထပ်တိုးစာအုပ်တစ်အုပ်လျှင် ၁၀၀၀ ကျပ် ကောက်ခံပါသည်။ လေကြောင်းပို့ဆောင်မှု သို့မဟုတ် နယ်မြို့များသို့ပို့ဆောင်မှုအတွက် ပို့ဆောင်ခ အနည်းငယ်ပိုနိုင်ပါသည်။ ပြည်ပပို့ဆောင်မှုအတွက် နိုင်ငံအကွာအဝေးနှင့် အလေးချိန်ပေါ်မူတည်၍ နှုန်းထားကွာခြားနိုင်ပါသည်။</p>
             </div>
         </div>
-        <div class="card service-card">
+        <div class="card service-card" aria-controls="service-gift">
             <img src="../Photos/gift.png" alt="" width="230" height="200" loading="lazy" decoding="async">
-            <button class="service-card__toggle" type="button" aria-expanded="false" aria-controls="service-gift" data-open-label="အသေးစိတ်ကြည့်ရန်" data-close-label="ပိတ်ရန်">
-                <span>အသေးစိတ်ကြည့်ရန်</span><i class="fas fa-chevron-down" aria-hidden="true"></i>
-            </button>
             <div class="card__content" id="service-gift">
                 <p class="card__title">စာအုပ်ဖုံး၊ စာမှတ်ကတ် အခမဲ့လက်ဆောင် (Gift)</p>
                 <p class="card__description">စာအုပ်တစ်အုပ်စီအတွက် စာမှတ်ကတ်နှင့် စာအုပ်ဖုံးလေးများကို လက်ဆောင်အဖြစ် အခမဲ့ပေးပါသည်။ ဖတ်လက်စနေရာကို မှတ်သားရန်လည်းကောင်း၊ စာအုပ်ကို သန့်ရှင်းစွာ ထိန်းသိမ်းရန်လည်းကောင်း အထောက်အကူဖြစ်စေပါသည်။</p>

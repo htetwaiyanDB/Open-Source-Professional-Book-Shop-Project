@@ -74,13 +74,19 @@ try {
     $connection = $owner;
     $connection->beginTransaction();
     try {
-        $exists = $connection->prepare('SELECT 1 FROM bookshop.users WHERE lower(username) = lower(?)');
+        $exists = $connection->prepare('SELECT userid, role FROM bookshop.users WHERE lower(username) = lower(?)');
         $exists->execute([$username]);
-        if ($exists->fetchColumn() !== false) {
-            throw new RuntimeException('That username already exists; choose another administrator username.');
+        $existing = $exists->fetch();
+        if ($existing !== false) {
+            if ($existing['role'] !== 'admin') {
+                throw new RuntimeException('That username belongs to a non-admin account; choose another administrator username.');
+            }
+            $update = $connection->prepare('UPDATE bookshop.users SET password = ?, email = ? WHERE userid = ?');
+            $update->execute([$hash, $email, (int) $existing['userid']]);
+        } else {
+            $insert = $connection->prepare("INSERT INTO bookshop.users (username, password, email, phone, address, role) VALUES (?, ?, ?, '', '', 'admin')");
+            $insert->execute([$username, $hash, $email]);
         }
-        $insert = $connection->prepare("INSERT INTO bookshop.users (username, password, email, phone, address, role) VALUES (?, ?, ?, '', '', 'admin')");
-        $insert->execute([$username, $hash, $email]);
         $connection->commit();
     } catch (Throwable $error) {
         if ($connection->inTransaction()) {
@@ -88,7 +94,8 @@ try {
         }
         throw $error;
     }
-    echo "Administrator created. Sign in through Admin/index.php and delete this shell history entry.\n";
+    echo ($existing === false ? 'Administrator created.' : 'Administrator credentials updated.')
+        . " Sign in through Admin/index.php.\n";
 } catch (Throwable $error) {
     fwrite(STDERR, 'Bootstrap failed: ' . $error->getMessage() . "\n");
     exit(1);

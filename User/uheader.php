@@ -28,7 +28,7 @@ $userPage = basename($_SERVER['PHP_SELF']);
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-dark active" aria-current="page" href="home.php">Home</a>
+                        <a class="nav-link text-dark <?php echo in_array($userPage, ['home.php', 'userhome.php'], true) ? 'active' : ''; ?>" <?php echo in_array($userPage, ['home.php', 'userhome.php'], true) ? 'aria-current="page"' : ''; ?> href="home.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo in_array($userPage, ['userindex.php', 'product_detail.php']) ? 'active' : ''; ?>" href="userindex.php">All Books</a>

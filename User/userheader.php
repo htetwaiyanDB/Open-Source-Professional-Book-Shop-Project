@@ -28,7 +28,7 @@ $userPage = basename($_SERVER['PHP_SELF']);
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-dark active" aria-current="page" href="home.php">Home</a>
+                        <a class="nav-link text-dark <?php echo in_array($userPage, ['home.php', 'userhome.php'], true) ? 'active' : ''; ?>" <?php echo in_array($userPage, ['home.php', 'userhome.php'], true) ? 'aria-current="page"' : ''; ?> href="home.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo in_array($userPage, ['userindex.php', 'product_detail.php']) ? 'active' : ''; ?>" href="userindex.php">All Books</a>
@@ -42,14 +42,7 @@ $userPage = basename($_SERVER['PHP_SELF']);
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo $userPage === 'contact.php' ? 'active' : ''; ?>" href="contact.php">Contact Us</a>
                     </li>
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark <?php echo $userPage === 'userProfile.php' ? 'active' : ''; ?>" href="userProfile.php">My Account</a>
-                    </li>
-                    <li class="nav-item">
-                        <form action="logout.php" method="post" class="d-inline"><?php echo csrf_field(); ?><button type="submit" class="nav-link text-dark border-0 bg-transparent">Logout</button></form>
-                    </li>
-                    <?php else: ?>
+                    <?php if (!isset($_SESSION['user_id'])): ?>
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo in_array($userPage, ['login.php', 'register.php']) ? 'active' : ''; ?>" href="login.php">Login</a>
                     </li>
@@ -87,8 +80,16 @@ $userPage = basename($_SERVER['PHP_SELF']);
                
                 <ul class="navbar-nav  mb-lg-0">
                     <li class="nav-item">
-                        <a href="cart.php" class="nav-link text-dark"><i class="fas fa-cart-shopping" style="font-size: 20px;"></i></a>
+                        <a href="cart.php" class="nav-link text-dark header-icon-link" aria-label="Shopping cart" title="Shopping cart"><i class="fas fa-cart-shopping" aria-hidden="true"></i></a>
                     </li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                    <li class="nav-item">
+                        <a href="userProfile.php" class="nav-link text-dark header-icon-link header-profile-link <?php echo $userPage === 'userProfile.php' ? 'active' : ''; ?>" aria-label="Account and order tracking" title="Account and order tracking">
+                            <i class="far fa-user" aria-hidden="true"></i>
+                            <span class="visually-hidden">My account</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
 
                 <form class="d-flex" action="userindex.php" method="get">

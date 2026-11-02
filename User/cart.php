@@ -1,6 +1,38 @@
 <?php
 require_once dirname(__DIR__) . '/Admin/connect.php';
-require_login();
+$user = require_login();
+$userId = (int) $_SESSION['user_id'];
+
+$todayOrders = [];
+$todayOrderResult = db_query($connection, "
+    SELECT o.orderid, o.status, o.orderdate,
+           COALESCE(SUM(od.amount), 0) AS total_amount
+    FROM orders o
+    LEFT JOIN orderdetails od ON od.orderid = o.orderid
+    WHERE o.customerid = ? AND o.orderdate = CURRENT_DATE
+    GROUP BY o.orderid, o.status, o.orderdate
+    ORDER BY o.orderid DESC
+", [$userId]);
+while ($todayOrder = db_fetch_assoc($todayOrderResult)) {
+    $todayOrder['items'] = [];
+    $todayOrders[(int) $todayOrder['orderid']] = $todayOrder;
+}
+if ($todayOrders) {
+    $todayItemResult = db_query($connection, '
+        SELECT od.orderid, p.productname, od.productqty, od.amount AS line_amount
+        FROM orderdetails od
+        JOIN orders o ON o.orderid = od.orderid
+        JOIN products p ON p.productid = od.productid
+        WHERE o.customerid = ? AND o.orderdate = CURRENT_DATE
+        ORDER BY od.orderid DESC, p.productname
+    ', [$userId]);
+    while ($todayItem = db_fetch_assoc($todayItemResult)) {
+        $orderId = (int) $todayItem['orderid'];
+        if (isset($todayOrders[$orderId])) {
+            $todayOrders[$orderId]['items'][] = $todayItem;
+        }
+    }
+}
 
 
 
@@ -58,6 +90,84 @@ require_once __DIR__ . '/userfunction.php';
     .showname {
         font-size: 1.25rem;
         font-weight: bold;
+    }
+    .today-orders {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        border: 1px solid #dfe4e8;
+        border-radius: 8px;
+        background: #fff;
+    }
+    .today-orders__heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e7eaed;
+    }
+    .today-orders__heading h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        color: #1f2933;
+    }
+    .today-orders__heading p {
+        margin: .35rem 0 0;
+        color: #667085;
+        font-size: .875rem;
+    }
+    .today-orders__all {
+        color: #067b7f;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    .today-orders__all:focus-visible,
+    .today-order__link:focus-visible {
+        outline: 3px solid rgba(8, 157, 161, .28);
+        outline-offset: 3px;
+    }
+    .today-orders__list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .today-order {
+        padding: 1rem 0;
+        border-bottom: 1px solid #edf0f2;
+    }
+    .today-order:last-child { border-bottom: 0; }
+    .today-order__table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+    .today-order__table th { padding: .25rem .75rem .65rem 0; color: #667085; font-size: .75rem; font-weight: 600; text-align: left; }
+    .today-order__table td { padding: .45rem .75rem .45rem 0; color: #1f2933; font-size: .9rem; line-height: 1.45; vertical-align: top; overflow-wrap: anywhere; }
+    .today-order__table th:first-child, .today-order__table td:first-child { width: 58%; }
+    .today-order__table th:nth-child(2), .today-order__table td:nth-child(2) { width: 14%; }
+    .today-order__table th:last-child, .today-order__table td:last-child { width: 28%; padding-right: 0; }
+    .today-order__price { font-weight: 600; white-space: nowrap; }
+    .today-order__footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 1rem; margin-top: .65rem; padding-top: .75rem; border-top: 1px solid #edf0f2; }
+    .today-order__grand-total { margin-right: auto; color: #1f2933; font-size: .9rem; }
+    .today-order__status {
+        width: fit-content;
+        padding: .3rem .65rem;
+        border-radius: 999px;
+        font-size: .75rem;
+        font-weight: 700;
+    }
+    .today-order__status--processing { color: #8a4b08; background: #fff3dd; }
+    .today-order__status--delivered { color: #116044; background: #e8f7f0; }
+    .today-order__link { color: #067b7f; font-size: .875rem; font-weight: 700; text-decoration: none; }
+    .today-orders__empty { margin: 0; padding: 1.25rem 0 .25rem; color: #667085; }
+    @media (max-width: 700px) {
+        .today-orders__heading { flex-direction: column; }
+        .today-order__table th:first-child, .today-order__table td:first-child { width: 50%; }
+        .today-order__table th:nth-child(2), .today-order__table td:nth-child(2) { width: 18%; }
+        .today-order__table th:last-child, .today-order__table td:last-child { width: 32%; }
+    }
+    @media (max-width: 420px) {
+        .today-orders { padding: 1.1rem; }
+        .today-order__table th, .today-order__table td { padding-right: .4rem; font-size: .78rem; }
+        .today-order__price { white-space: normal; }
+        .today-order__grand-total { width: 100%; }
     }
 </style>
     <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
@@ -148,6 +258,48 @@ require_once __DIR__ . '/userfunction.php';
                             </div>
                         </div>
                     </div>
+                    <section class="today-orders" aria-labelledby="today-orders-title">
+                        <div class="today-orders__heading">
+                            <div>
+                                <h2 id="today-orders-title">Today's orders</h2>
+                                <p>Only orders placed today are shown here.</p>
+                            </div>
+                            <a class="today-orders__all" href="userProfile.php#order-tracking">View all order history</a>
+                        </div>
+                        <?php if ($todayOrders): ?>
+                            <div class="today-orders__list">
+                                <?php foreach ($todayOrders as $todayOrder):
+                                    $isDelivered = (int) $todayOrder['status'] === 1;
+                                ?>
+                                    <article class="today-order">
+                                        <table class="today-order__table">
+                                            <thead><tr><th scope="col">Items name</th><th scope="col">Quantity</th><th scope="col">Pricing</th></tr></thead>
+                                            <tbody>
+                                                <?php if ($todayOrder['items']): ?>
+                                                    <?php foreach ($todayOrder['items'] as $item): ?>
+                                                        <tr>
+                                                            <td><?php echo e($item['productname']); ?></td>
+                                                            <td><?php echo e($item['productqty']); ?></td>
+                                                            <td class="today-order__price"><?php echo e(number_format((float) $item['line_amount'], 2)); ?> MMK</td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <tr><td>No item details available.</td><td>0</td><td class="today-order__price">0.00 MMK</td></tr>
+                                                <?php endif; ?>
+                                            </tbody>
+                                        </table>
+                                        <footer class="today-order__footer">
+                                            <strong class="today-order__grand-total">Order total: <?php echo e(number_format((float) $todayOrder['total_amount'], 2)); ?> MMK</strong>
+                                            <span class="today-order__status today-order__status--<?php echo $isDelivered ? 'delivered' : 'processing'; ?>"><?php echo $isDelivered ? 'Delivered' : 'Processing'; ?></span>
+                                            <a class="today-order__link" href="userProfile.php#order-<?php echo e($todayOrder['orderid']); ?>">Track</a>
+                                        </footer>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="today-orders__empty">You have not placed an order today. Your older orders are available in My Account.</p>
+                        <?php endif; ?>
+                    </section>
                 </div>
             </div>
         </div>

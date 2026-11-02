@@ -55,6 +55,7 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
     <br><br><br>
 
     <h1 style="font-weight: bolder; text-align: center;">စာအုပ်အမျိုးအစားများ (Book Categories)</h1>
+    <div class="category-showcase">
     <div class="stand">
         <img class="stand-img" src="../Photos/stand 1.png" alt="" loading="lazy" decoding="async" />
         <a>ရသ & သုတ</a>
@@ -79,9 +80,11 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
         <img class="stand-img" src="../Photos/stand 6.png" alt="" loading="lazy" decoding="async" />
         <a>LGBT, Romance စာအုပ်များ</a>
     </div>
+    </div>
     <br><br><br>
 
     <h1 style="text-align: center;">အရောင်းရဆုံး စာအုပ်များ (Best Seller)</h1>
+    <div class="book-showcase">
     <div class="best-seller">
         <div class="best-seller-details">
             <a href="userindex.php"><img src="../Photos/Lgbt 8.jpg" alt="" width="300" height="250" loading="lazy" decoding="async"></a>
@@ -105,12 +108,14 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
             <img src="../Photos/yatha 5.png" alt="" width="300" height="250" loading="lazy" decoding="async">
         </div>
     </div>
+    </div>
     <br>
     <button class="btn-book"><a href="bestseller.php">ပိုမိုရှာရန်</a></button>
     <br><br>
 
     <h1 style="text-align: center;">အသစ်ထွက် စာအုပ်များ (New Releases)</h1>
 
+    <div class="book-showcase">
     <div class="best-seller">
         <div class="best-seller-details">
             <img src="../Photos/national 10.png" alt="" width="300" height="250" loading="lazy" decoding="async">
@@ -133,6 +138,7 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
         <div class="best-seller-details">
             <img src="../Photos/yatha10.png" alt="" width="300" height="250" loading="lazy" decoding="async">
         </div>
+    </div>
     </div>
 
     <br>

@@ -2,37 +2,49 @@
 require_once __DIR__ . '/connect.php';
 require_admin();
 $adminPage = basename($_SERVER['PHP_SELF']);
+$catalogActive = in_array($adminPage, ['category.php', 'author.php'], true);
 ?>
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center fw-bold" href="dashboard.php">
-            <img src="../Photos/logo.png" alt="Book Palace" style="width: 60px; height: 44px; object-fit: contain; margin-right: 10px;">
-            <span>Book Palace Admin</span>
+<link rel="stylesheet" href="admin-ui.css?v=20261102-pagination">
+<header class="admin-topbar">
+<nav class="navbar navbar-expand-xl" aria-label="Admin navigation">
+    <div class="admin-topbar__inner">
+        <a class="admin-brand" href="dashboard.php">
+            <img src="../Photos/logo.png" alt="">
+            <span><strong>Book Palace</strong><small>Administration</small></span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler admin-nav-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="adminNavbar">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav admin-nav-list">
                 <li class="nav-item">
-                    <a class="nav-link <?php echo $adminPage === 'dashboard.php' ? 'active' : ''; ?>" href="dashboard.php">Dashboard</a>
+                    <a class="admin-nav-link <?php echo $adminPage === 'dashboard.php' ? 'is-active' : ''; ?>" href="dashboard.php"><svg aria-hidden="true"><use href="../User/auth-icons.svg#dashboard"></use></svg>Overview</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo in_array($adminPage, ['product.php', 'productlist.php', 'edit.php']) ? 'active' : ''; ?>" href="productlist.php">Books</a>
+                    <a class="admin-nav-link <?php echo in_array($adminPage, ['product.php', 'productlist.php', 'edit.php'], true) ? 'is-active' : ''; ?>" href="productlist.php"><svg aria-hidden="true"><use href="../User/auth-icons.svg#book"></use></svg>Books</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo in_array($adminPage, ['user.php', 'userlist.php']) ? 'active' : ''; ?>" href="userlist.php">Users</a>
+                    <a class="admin-nav-link <?php echo $adminPage === 'order_mgmt.php' ? 'is-active' : ''; ?>" href="order_mgmt.php"><svg aria-hidden="true"><use href="../User/auth-icons.svg#receipt"></use></svg>Orders</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo $adminPage === 'order_mgmt.php' ? 'active' : ''; ?>" href="order_mgmt.php">Orders</a>
+                    <a class="admin-nav-link <?php echo in_array($adminPage, ['user.php', 'userlist.php'], true) ? 'is-active' : ''; ?>" href="userlist.php"><svg aria-hidden="true"><use href="../User/auth-icons.svg#users"></use></svg>Customers</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="admin-nav-link dropdown-toggle <?php echo $catalogActive ? 'is-active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><svg aria-hidden="true"><use href="../User/auth-icons.svg#archive"></use></svg>Catalog</a>
+                    <ul class="dropdown-menu admin-catalog-menu">
+                        <li><a class="dropdown-item" href="category.php">Categories</a></li>
+                        <li><a class="dropdown-item" href="author.php">Authors</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo $adminPage === 'feedback.php' ? 'active' : ''; ?>" href="feedback.php">Feedback</a>
-                </li>
-                <li class="nav-item ms-lg-2">
-                    <form action="logout.php" method="post" class="d-inline"><?php echo csrf_field(); ?><button type="submit" class="btn btn-outline-dark btn-sm mt-1 mt-lg-0">Logout</button></form>
+                    <a class="admin-nav-link <?php echo $adminPage === 'feedback.php' ? 'is-active' : ''; ?>" href="feedback.php"><svg aria-hidden="true"><use href="../User/auth-icons.svg#message-square"></use></svg>Feedback</a>
                 </li>
             </ul>
+            <div class="admin-account">
+                <span class="admin-account__identity"><small>Signed in as</small><strong><?php echo e($_SESSION['admin'] ?? 'Admin'); ?></strong></span>
+                <form action="logout.php" method="post"><?php echo csrf_field(); ?><button type="submit" class="admin-logout"><svg aria-hidden="true"><use href="../User/auth-icons.svg#logout"></use></svg><span>Sign out</span></button></form>
+            </div>
         </div>
     </div>
 </nav>
+</header>

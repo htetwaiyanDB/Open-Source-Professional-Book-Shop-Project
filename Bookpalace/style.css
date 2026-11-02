@@ -116,6 +116,36 @@ section .main .main_img img{
 
 
 /* best-seller */
+.book-showcase {
+    width: min(1272px, calc(100% - 32px));
+    margin: 0 auto;
+    padding-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.book-showcase .best-seller {
+    flex: 0 1 300px;
+    margin: 0;
+    padding: 0;
+}
+
+.book-showcase .best-seller-details,
+.book-showcase .best-seller-details a {
+    width: 100%;
+}
+
+.book-showcase .best-seller-details img {
+    display: block;
+    max-width: 100%;
+    height: 250px;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
 .best-seller {
     width: 300px;
     height: 300px;
@@ -138,7 +168,8 @@ section .main .main_img img{
    }
    
   .btn-book {
-    margin:0 80vh;
+    display: block;
+    margin: 20px auto;
     background-color: #089da1;
     width: 150px;
     height: 50px;
@@ -150,6 +181,23 @@ section .main .main_img img{
         color: #fff;
         text-align: center;
      }  
+
+@media (max-width: 1024px) {
+    .book-showcase {
+        max-width: 680px;
+    }
+}
+
+@media (max-width: 767px) {
+    .book-showcase {
+        width: calc(100% - 24px);
+        gap: 16px;
+    }
+
+    .book-showcase .best-seller {
+        flex-basis: min(300px, 100%);
+    }
+}
        
 
 
@@ -175,11 +223,33 @@ section .main .main_img img{
 
 
 /* books */
+.category-showcase {
+    width: min(1248px, calc(100% - 32px));
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 400px));
+    justify-content: center;
+    gap: 24px;
+}
+
 .stand{
     width: 400px;
     height: 200px;
     display: inline-block;
     overflow: visible;
+    }
+
+    .category-showcase .stand {
+        width: 100%;
+        margin: 0;
+    }
+
+    .category-showcase .stand .stand-img {
+        display: block;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        object-fit: contain;
     }
 
     .stand a {       
@@ -214,7 +284,17 @@ section .main .main_img img{
   }
   
   .wh-card{
-    display: inline-flex;
+    width: min(1320px, calc(100% - 32px));
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 24px;
+  }
+
+  .wh-card .card {
+    margin-left: 0;
   }
   
   .card:hover {
@@ -255,4 +335,32 @@ section .main .main_img img{
     color: #000;
     line-height: 1.3;
   }
-  
+
+@media (max-width: 1024px) {
+    .category-showcase {
+        max-width: 824px;
+        grid-template-columns: repeat(2, minmax(0, 400px));
+    }
+
+    .wh-card {
+        max-width: 856px;
+    }
+}
+
+@media (max-width: 767px) {
+    .category-showcase,
+    .wh-card {
+        width: calc(100% - 24px);
+        max-width: 400px;
+        gap: 16px;
+    }
+
+    .category-showcase {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .wh-card .card {
+        width: 100%;
+        max-width: 400px;
+    }
+}

@@ -74,12 +74,13 @@ function current_user_record(): ?array
 function require_login(): array
 {
     $user = current_user_record();
-    if (!$user) { http_response_code(401); exit('Please sign in to continue.'); }
+    if (!$user) { redirect('login.php'); }
     return $user;
 }
 function require_admin(): array
 {
-    $user = require_login();
+    $user = current_user_record();
+    if (!$user) { redirect('index.php'); }
     if ($user['role'] !== 'admin') { http_response_code(403); exit('Administrator access required.'); }
     return $user;
 }

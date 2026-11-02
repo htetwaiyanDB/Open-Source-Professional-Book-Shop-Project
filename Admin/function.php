@@ -121,5 +121,7 @@ function del_product(): void
     global $connection;
     admin_mutation();
     db_query($connection, 'DELETE FROM products WHERE productid=?', [positive_id($_POST['pid'] ?? '')]);
-    redirect('productlist.php');
+    $pageValue = $_POST['page'] ?? '1';
+    $page = is_scalar($pageValue) && ctype_digit((string) $pageValue) && (int) $pageValue > 1 ? (int) $pageValue : 1;
+    redirect('productlist.php' . ($page > 1 ? '?page=' . $page : ''));
 }

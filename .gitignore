@@ -9,6 +9,7 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+.secrets/
 *.pem
 *.key
 *.crt
@@ -16,3 +17,4 @@ php*/php.exe
 php.ini
 __pycache__/
 *.pyc
+/tmp/

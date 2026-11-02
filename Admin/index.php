@@ -15,6 +15,7 @@ if (isset($_POST['btnlogin'])) {
     <link rel='stylesheet' href='admin-login.css'>
     <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
     <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
+    <script defer src="admin-login.js?v=20261102-password"></script>
 </head>
 
 <body>
@@ -24,11 +25,16 @@ if (isset($_POST['btnlogin'])) {
                     <form action="" method="post">
 <?php echo csrf_field(); echo render_flash(); ?>
                         <h2>Login</h2>
-                        <div class="inputbox"> <svg class="login-icon" aria-hidden="true"><use href="../User/auth-icons.svg#mail"></use></svg> <input type="text" name="username" required>
-                            <label>Email / Username</label>
+                        <div class="inputbox"> <svg class="login-icon" aria-hidden="true"><use href="../User/auth-icons.svg#mail"></use></svg> <input id="admin-identifier" type="text" name="username" autocomplete="username" required>
+                            <label for="admin-identifier">Email / Username</label>
                         </div>
-                        <div class="inputbox"> <svg class="login-icon" aria-hidden="true"><use href="../User/auth-icons.svg#lock"></use></svg> <input type="password" name="password"
-                                required> <label>Password</label> </div>
+                        <div class="inputbox">
+                            <input id="admin-password" type="password" name="password" autocomplete="current-password" required>
+                            <label for="admin-password">Password</label>
+                            <button class="password-toggle" type="button" data-admin-password-toggle="admin-password" aria-label="Show password" aria-pressed="false">
+                                <svg class="login-icon" aria-hidden="true"><use href="../User/auth-icons.svg#eye"></use></svg>
+                            </button>
+                        </div>
                         <button type="submit" name="btnlogin">Login</button>
     
                     </form>

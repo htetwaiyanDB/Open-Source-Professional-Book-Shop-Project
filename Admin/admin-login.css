@@ -10,7 +10,7 @@ section {
     align-items: center;
     min-height: 100vh;
     width: 100%;
-    background: url("../photos/background.jpg") no-repeat;
+    background: url("../Photos/background.jpg") no-repeat;
     background-position: center;
     background-size: cover;
 }
@@ -70,6 +70,18 @@ input:valid~label {
     color: #fff;
 }
 
+.inputbox input:-webkit-autofill,
+.inputbox input:-webkit-autofill:hover,
+.inputbox input:-webkit-autofill:focus,
+.inputbox input:-webkit-autofill:active {
+    -webkit-text-fill-color: #fff !important;
+    caret-color: #fff;
+    background-color: transparent !important;
+    -webkit-background-clip: text;
+    box-shadow: 0 0 0 1000px transparent inset !important;
+    transition: background-color 9999s ease-out 0s;
+}
+
 .inputbox ion-icon,
 .inputbox .login-icon {
     position: absolute;
@@ -120,6 +132,35 @@ button {
     cursor: pointer;
     font-size: 1em;
     font-weight: 600;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 3px;
+    right: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: transparent;
+    color: #fff;
+}
+
+.password-toggle:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.password-toggle .login-icon {
+    position: static;
+    width: 20px;
+    height: 20px;
 }
 
 .register {

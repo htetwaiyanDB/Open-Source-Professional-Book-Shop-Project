@@ -4,7 +4,7 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="stylesheet" href="../Bookpalace/style.css">
+<link rel="stylesheet" href="../Bookpalace/style.css?v=<?php echo rawurlencode((string) filemtime(dirname(__DIR__) . '/Bookpalace/style.css')); ?>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>

@@ -9,7 +9,7 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Store Website</title>
     
-    <link rel="stylesheet" href="../Bookpalace/style.css">
+    <link rel="stylesheet" href="../Bookpalace/style.css?v=<?php echo rawurlencode((string) filemtime(dirname(__DIR__) . '/Bookpalace/style.css')); ?>">
     <style>
         .stand .stand-img{
           height:auto;
@@ -35,9 +35,9 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
 </head>
 <body>  
     <?php include 'userheader.php'?> 
-    <section>
-        <div class="main">
-            <div class="main_tag">
+    <section class="home-hero">
+        <div class="main home-hero__layout">
+            <div class="main_tag home-hero__copy">
                 <h1>WELCOME TO<br><span><i>BOOK PALACE</i></span></h1>
                 <p>
                     <i>Books are the constant companions of those who find solace 
@@ -48,8 +48,8 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
                 </p>
             </div>
 
-            <div class="main_img">
-                <img src="../Photos/table 2.png" alt="Books arranged on a reading table">
+            <div class="main_img home-hero__media">
+                <img class="home-hero__image" src="../Photos/table 2.png" alt="Books arranged on a reading table" decoding="async" fetchpriority="high">
             </div>
         </div>
     </section>

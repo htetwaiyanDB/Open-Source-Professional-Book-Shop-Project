@@ -67,6 +67,23 @@ textarea:focus-visible {
     min-width: 0;
 }
 
+/* Home hero safety rules live in the shared, cache-busted stylesheet too.
+   This prevents an older cached page stylesheet from restoring fixed widths. */
+.home-hero__layout,
+.home-hero__copy,
+.home-hero__media {
+    min-width: 0;
+}
+
+.home-hero__image {
+    display: block;
+    width: min(100%, 700px) !important;
+    height: auto !important;
+    max-width: 100% !important;
+    margin-inline: auto;
+    object-fit: contain;
+}
+
 /* Shared catalog cards: phone 1, tablet 2, laptop 4 columns. */
 .book-grid > [class*="col-"] {
     display: flex;
@@ -198,6 +215,70 @@ textarea:focus-visible {
     h2 { font-size: clamp(1.5rem, 7vw, 2rem); }
     h3 { font-size: clamp(1.25rem, 6vw, 1.65rem); }
 
+    .home-hero {
+        width: 100% !important;
+        min-height: auto !important;
+        height: auto !important;
+        padding: 2.5rem 0 !important;
+        overflow: hidden;
+    }
+
+    .home-hero__layout {
+        display: flex !important;
+        width: calc(100% - 32px) !important;
+        min-height: 0 !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 2rem !important;
+        position: static !important;
+        transform: none !important;
+    }
+
+    .home-hero__copy,
+    .home-hero__media {
+        width: 100% !important;
+        max-width: 100% !important;
+        position: static !important;
+        transform: none !important;
+        text-align: center;
+    }
+
+    .home-hero__copy h1,
+    .home-hero__copy p {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-inline: 0 !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        position: static !important;
+        overflow-wrap: anywhere;
+        text-align: center !important;
+    }
+
+    .home-hero__copy h1 {
+        font-size: clamp(2rem, 10vw, 2.75rem) !important;
+        line-height: 1.15;
+    }
+
+    .home-hero__copy p {
+        margin-top: 1.25rem !important;
+        font-size: 1rem;
+        line-height: 1.65 !important;
+    }
+
+    .home-hero__copy p br {
+        display: none;
+    }
+
+    .home-hero__image {
+        width: min(100%, 520px) !important;
+        max-height: 42dvh;
+    }
+
     .product-detail-layout {
         flex-direction: column !important;
     }
@@ -254,6 +335,14 @@ textarea:focus-visible {
     .storefront-search .btn {
         width: 100%;
         margin-right: 0 !important;
+    }
+
+    .home-hero__layout {
+        width: calc(100% - 24px) !important;
+    }
+
+    .home-hero__copy h1 {
+        font-size: clamp(1.85rem, 10vw, 2.25rem) !important;
     }
 }
 

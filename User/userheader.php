@@ -4,8 +4,8 @@ $userPage = basename($_SERVER['PHP_SELF']);
 ?>
 <link rel="stylesheet" href="../assets/vendor/fontawesome/css/all.min.css">
 <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
-<link rel="stylesheet" href="userheader.css?v=20261102-responsive">
-<link rel="stylesheet" href="../assets/css/storefront-responsive.css?v=20261102-responsive">
+<link rel="stylesheet" href="userheader.css?v=<?php echo rawurlencode((string) filemtime(__DIR__ . '/userheader.css')); ?>">
+<link rel="stylesheet" href="../assets/css/storefront-responsive.css?v=<?php echo rawurlencode((string) filemtime(dirname(__DIR__) . '/assets/css/storefront-responsive.css')); ?>">
     <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
     <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
     <nav class="navbar navbar-expand-lg navbar-light sticky-top bg-light">

@@ -12,8 +12,9 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
     <link rel="stylesheet" href="../Bookpalace/style.css">
     <style>
         .stand .stand-img{
-          height:200px;
-          width: 500px;
+          height:auto;
+          max-height: 200px;
+          width: 100%;
           transition:1s;
         }
 
@@ -48,7 +49,7 @@ require_once dirname(__DIR__) . '/Admin/connect.php';
             </div>
 
             <div class="main_img">
-                <img src="../Photos/table 2.png">
+                <img src="../Photos/table 2.png" alt="Books arranged on a reading table">
             </div>
         </div>
     </section>

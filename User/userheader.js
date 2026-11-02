@@ -1,15 +1,12 @@
-document.addEventListener('DOMContentLoaded', (event) => {
-    const categoryDropdown = document.getElementById('categoryDropdown');
+document.addEventListener('DOMContentLoaded', () => {
+    const navigation = document.getElementById('navbarSupportedContent');
+    if (!navigation || typeof bootstrap === 'undefined') return;
 
-    categoryDropdown.addEventListener('mouseover', () => {
-        categoryDropdown.size = categoryDropdown.options.length;
-    });
-
-    categoryDropdown.addEventListener('mouseout', () => {
-        categoryDropdown.size = 1;
-    });
-
-    categoryDropdown.addEventListener('change', () => {
-        categoryDropdown.size = 1;
+    navigation.querySelectorAll('a:not(.dropdown-toggle)').forEach((link) => {
+        link.addEventListener('click', () => {
+            if (window.matchMedia('(max-width: 991.98px)').matches) {
+                bootstrap.Collapse.getOrCreateInstance(navigation).hide();
+            }
+        });
     });
 });

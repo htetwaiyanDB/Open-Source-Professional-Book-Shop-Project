@@ -11,24 +11,21 @@ if (!$product) { http_response_code(404); exit('Book not found.'); }
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo e($product['slug']); ?></title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="assets/style.css"/>
     <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
     <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
 </head>
 <body>
   <?php include 'userheader.php'; ?>
   <div class="container mt-5">
-    <div class="d-flex flex-row bd-highlight mb-3">
-      <div class="p-3 w-50 bd-highlight">
+    <div class="d-flex product-detail-layout mb-3">
+      <div class="p-3 w-50 product-detail-media">
         <div class="row">
           <div class="col-sm-12">
             <div class="card mb-3">
               <img src="../Photos/<?php echo e($product['photo']); ?>" class="card-img-top mt-3" alt="<?php echo e($product['productname']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
           </div>
-          <form action="comment.php" method="post">
+          <form class="product-detail-actions" action="comment.php" method="post">
 <?php echo csrf_field(); ?>
               <input type="hidden" name="productid" value="<?php echo isset($product_id) ? $product_id : ''; ?>">
               <textarea name="content" class="form-control mb-2" placeholder="New Comment"></textarea>
@@ -39,7 +36,7 @@ if (!$product) { http_response_code(404); exit('Book not found.'); }
 
         </div>
       </div>
-      <div class="w-50 p-4 bd-highlight">
+      <div class="w-50 p-4 product-detail-copy">
         <div class="card-body btn-light">
           <h5 class="card-title">Book's name - <?php echo e($product['productname']); ?></h5>
           <p class="card-text"> Price - <?php echo $product['price']."Ks"; ?></p>

@@ -7,7 +7,8 @@
 
 section{
     width: 100%;
-    height: 88vh;
+    min-height: min(760px, 88dvh);
+    height: auto;
     background-image: url(photos/bg.png);
     background-size: cover;
     background-position: center;
@@ -61,6 +62,10 @@ section nav .social_icon i:hover{
 }
 
 section .main{
+    width: min(1320px, calc(100% - 48px));
+    min-height: min(700px, 82dvh);
+    margin: 0 auto;
+    gap: clamp(2rem, 5vw, 5rem);
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -70,9 +75,9 @@ section .main{
 
 section .main h1{
     position: relative;
-    font-size: 55px;
-    top: 80px;
-    left: 25px;
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    top: 0;
+    left: 0;
 }
 
 section .main h1 span{
@@ -80,12 +85,13 @@ section .main h1 span{
 }
 
 section .main p{
-    width: 650px;
+    width: min(100%, 650px);
     text-align: justify;
     line-height: 22px;
     position: relative;
-    top: 125px;
-    left: 25px;
+    top: 0;
+    left: 0;
+    margin-top: 1.5rem;
 }
 
 section .main .main_tag .main_btn{
@@ -98,10 +104,8 @@ section .main .main_tag .main_btn{
     text-decoration: none;
 }
 section .main .main_img img{
-    width: 700px;
-    position: relative;
-    top: 90px;
-    right: 30px;    
+    width: min(48vw, 700px);
+    position: static;
 }
 
         .main_img img {
@@ -241,6 +245,7 @@ section .main .main_img img{
 
     .category-showcase .stand {
         width: 100%;
+        height: auto;
         margin: 0;
     }
 
@@ -336,7 +341,19 @@ section .main .main_img img{
     line-height: 1.3;
   }
 
+body > h1,
+body > h2 {
+    width: min(100% - 24px, 1200px);
+    margin-inline: auto;
+    overflow-wrap: anywhere;
+}
+
 @media (max-width: 1024px) {
+    section .main {
+        width: min(100% - 40px, 920px);
+        min-height: 620px;
+    }
+
     .category-showcase {
         max-width: 824px;
         grid-template-columns: repeat(2, minmax(0, 400px));
@@ -348,6 +365,41 @@ section .main .main_img img{
 }
 
 @media (max-width: 767px) {
+    section {
+        min-height: auto;
+        padding: 3rem 0;
+    }
+
+    section .main {
+        width: calc(100% - 24px);
+        min-height: auto;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2rem;
+        top: 0;
+        text-align: center;
+    }
+
+    section .main p {
+        width: 100%;
+        text-align: center;
+        line-height: 1.65;
+    }
+
+    section .main p br {
+        display: none;
+    }
+
+    section .main .main_img img {
+        width: min(100%, 520px);
+    }
+
+    .main_img:hover img,
+    .stand .stand-img:hover,
+    .best-seller .best-seller-details img:hover {
+        transform: none !important;
+    }
+
     .category-showcase,
     .wh-card {
         width: calc(100% - 24px);
@@ -362,5 +414,60 @@ section .main .main_img img{
     .wh-card .card {
         width: 100%;
         max-width: 400px;
+        height: auto;
+        min-height: 250px;
+        padding: 1rem;
+        flex-direction: column;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .wh-card .card > img {
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
+    }
+
+    .card__content {
+        position: static;
+        height: auto;
+        margin-top: 1rem;
+        border-radius: 8px;
+        transform: none;
+    }
+
+    .card__description {
+        font-size: 0.95rem;
+        line-height: 1.55;
+    }
+}
+
+@media (max-width: 420px) {
+    section .main h1 {
+        font-size: 2rem;
+    }
+
+    .book-showcase .best-seller {
+        height: auto;
+        min-height: 270px;
+        padding-inline: 0;
+    }
+
+    .stand,
+    .category-showcase .stand .stand-img {
+        height: auto;
+    }
+
+    .card__title {
+        font-size: 1.2rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .main_img img,
+    .stand .stand-img,
+    .best-seller .best-seller-details img,
+    .card,
+    .card__content {
+        transition: none !important;
     }
 }

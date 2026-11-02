@@ -54,7 +54,7 @@ $num = (int) ceil($total_products / $perpage);
 </div>
     <div class="row">
       <div class="col-sm-12 mt-5">
-        <div class="row">
+        <div class="row book-grid">
           <?php
           if (db_num_rows($go_query) > 0) {
           while ($out = db_fetch_array($go_query)) {
@@ -65,9 +65,9 @@ $num = (int) ceil($total_products / $perpage);
             $photo = $out['photo'];
             $Qty = $out ['qty'];
             ?>
-            <div class="col-md-3 mb-3">
-              <div class="card" style="border:none;">
-                <a href="product_detail.php?id=<?php echo e($product_id); ?>" class="ms-2 mt-3">
+            <div class="col-12 col-sm-6 col-lg-3 mb-4">
+              <div class="card book-catalog-card border-0">
+                <a href="product_detail.php?id=<?php echo e($product_id); ?>">
                   <img src="../Photos/<?php echo e($photo); ?>" class="card-img-top img-fluid" alt="<?php echo e($product_name); ?>">
                 </a>
                 <div class="card-body">

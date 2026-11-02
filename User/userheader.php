@@ -2,31 +2,23 @@
 require_once dirname(__DIR__) . '/Admin/connect.php';
 $userPage = basename($_SERVER['PHP_SELF']);
 ?>
-
-
-<html lang="en">
-<head>
 <link rel="stylesheet" href="../assets/vendor/fontawesome/css/all.min.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Document</title>
-<link rel="stylesheet" href="userheader.css"> <!-- Link to external CSS file -->
 <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="userheader.css?v=20261102-responsive">
+<link rel="stylesheet" href="../assets/css/storefront-responsive.css?v=20261102-responsive">
     <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
     <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
-</head>
-<body>
     <nav class="navbar navbar-expand-lg navbar-light sticky-top bg-light">
-        <div class="container-fluid">
+        <div class="container-fluid storefront-nav-container">
             <a class="navbar-brand text-dark" href="home.php">
-                <img src="../Photos/logo.png" style="width: 100px; height:50px;" alt="Book Palace">
+                <img class="storefront-logo" src="../Photos/logo.png" alt="Book Palace">
                 
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 storefront-primary-nav">
                     <li class="nav-item">
                         <a class="nav-link text-dark <?php echo in_array($userPage, ['home.php', 'userhome.php'], true) ? 'active' : ''; ?>" <?php echo in_array($userPage, ['home.php', 'userhome.php'], true) ? 'aria-current="page"' : ''; ?> href="home.php">Home</a>
                     </li>
@@ -78,7 +70,7 @@ $userPage = basename($_SERVER['PHP_SELF']);
                     </li>
                 </ul><br>
                
-                <ul class="navbar-nav  mb-lg-0">
+                <ul class="navbar-nav mb-lg-0 storefront-account-nav">
                     <li class="nav-item">
                         <a href="cart.php" class="nav-link text-dark header-icon-link" aria-label="Shopping cart" title="Shopping cart"><i class="fas fa-cart-shopping" aria-hidden="true"></i></a>
                     </li>
@@ -92,7 +84,7 @@ $userPage = basename($_SERVER['PHP_SELF']);
                     <?php endif; ?>
                 </ul>
 
-                <form class="d-flex" action="userindex.php" method="get">
+                <form class="d-flex storefront-search" action="userindex.php" method="get" role="search">
                     <input class="form-control me-2" type="search" name="search_query" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-info" type="submit">Search</button>
                 </form>
@@ -101,5 +93,3 @@ $userPage = basename($_SERVER['PHP_SELF']);
     </nav>
     <script defer src="../assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="userheader.js"></script> <!-- Link to external JS file -->
-</body>
-</html>

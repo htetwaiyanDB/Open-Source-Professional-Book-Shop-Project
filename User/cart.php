@@ -189,6 +189,7 @@ require_once __DIR__ . '/userfunction.php';
                                 </div>
                                 <?php if (!empty($_SESSION['cart'])) : ?>
                                     <div class="card-body">
+                                        <div class="responsive-table-wrap" role="region" aria-label="Shopping cart items" tabindex="0">
                                         <table class="table table-hover">
                                             <thead>
                                                 <tr>
@@ -243,6 +244,7 @@ require_once __DIR__ . '/userfunction.php';
                                                 </tr>
                                             </tfoot>
                                         </table>
+                                        </div>
                                     </div>
                                     <div class="card-footer card-footer-custom text-center">
                                         <form action="clear.php" method="post" style="display:inline"><?php echo csrf_field(); ?><button type="submit" class="btn btn-danger btn-custom">Clear Cart</button></form>

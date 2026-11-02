@@ -24,9 +24,11 @@
     background-color: #ddd;
 }
 
-/* Show the dropdown menu on hover */
-#categoryDropdown:hover .dropdown-menu {
-    display: block;
+/* Hover enhancement is desktop-only; touch users open it with the button. */
+@media (hover: hover) and (pointer: fine) and (min-width: 992px) {
+    #categoryDropdown:hover .dropdown-menu {
+        display: block;
+    }
 }
 
 .navbar .nav-link {
@@ -100,6 +102,10 @@
 @media (max-width: 991.98px) {
     .navbar .header-icon-link {
         margin: 4px 0;
+    }
+
+    .navbar .nav-link::after {
+        transform-origin: left;
     }
 }
 

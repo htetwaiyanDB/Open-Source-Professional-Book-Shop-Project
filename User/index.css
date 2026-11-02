@@ -191,3 +191,54 @@ section {
     width: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  section {
+    width: 100%;
+    padding: 32px 0;
+  }
+
+  .container {
+    padding-inline: 16px;
+  }
+
+  .section-header {
+    margin-bottom: 32px;
+  }
+
+  .section-header h2 {
+    font-size: 2.25rem;
+  }
+
+  .contact-info-item {
+    align-items: center;
+  }
+
+  .contact-info-icon {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+  }
+
+  .contact-info-icon i {
+    font-size: 22px;
+    line-height: 52px;
+  }
+
+  .contact-info-content {
+    min-width: 0;
+    margin-left: 14px;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-form {
+    padding: 24px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-form .input-box span,
+  .contact-form .input-box input[type="submit"] {
+    transition: none;
+  }
+}

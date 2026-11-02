@@ -1,0 +1,269 @@
+:root {
+    --storefront-gutter: clamp(0.75rem, 3vw, 2rem);
+    --storefront-content: 1320px;
+    --storefront-teal: #067b7f;
+    --storefront-focus: rgba(8, 157, 161, 0.32);
+}
+
+html {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    min-width: 320px;
+    overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+}
+
+button,
+.btn,
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+    touch-action: manipulation;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid var(--storefront-focus);
+    outline-offset: 2px;
+}
+
+.storefront-nav-container {
+    width: min(100%, var(--storefront-content));
+    padding-inline: var(--storefront-gutter);
+}
+
+.storefront-logo {
+    display: block;
+    width: 100px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.storefront-search {
+    min-width: min(100%, 250px);
+}
+
+.storefront-search .form-control {
+    min-width: 0;
+}
+
+/* Shared catalog cards: phone 1, tablet 2, laptop 4 columns. */
+.book-grid > [class*="col-"] {
+    display: flex;
+}
+
+.book-grid .book-catalog-card {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+}
+
+.book-catalog-card > a {
+    display: flex;
+    min-height: 260px;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+}
+
+.book-catalog-card .card-img-top {
+    width: 100%;
+    height: 240px;
+    object-fit: contain;
+}
+
+.book-catalog-card .card-body {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+}
+
+.book-catalog-card .card-title,
+.book-catalog-card .card-text {
+    overflow-wrap: anywhere;
+}
+
+.book-catalog-card form,
+.book-catalog-card form .btn {
+    width: 100%;
+}
+
+.book-catalog-card form {
+    margin-top: auto;
+}
+
+.product-detail-layout {
+    gap: clamp(1rem, 3vw, 2.5rem);
+}
+
+.product-detail-media,
+.product-detail-copy {
+    min-width: 0;
+}
+
+.product-detail-media .card-img-top {
+    max-height: 620px;
+    object-fit: contain !important;
+}
+
+.responsive-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.responsive-table-wrap > table {
+    min-width: 700px;
+    margin-bottom: 0;
+}
+
+.pagination {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        max-height: calc(100dvh - 76px);
+        overflow-y: auto;
+        padding: 0.75rem 0 1rem;
+    }
+
+    .storefront-primary-nav,
+    .storefront-account-nav {
+        gap: 0.25rem;
+    }
+
+    .navbar .nav-link,
+    #categoryDropdown .btn,
+    .storefront-search .btn,
+    .storefront-search .form-control {
+        min-height: 44px;
+    }
+
+    #categoryDropdown,
+    #categoryDropdown .btn,
+    .storefront-search {
+        width: 100%;
+    }
+
+    #categoryDropdown .btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+    .dropdown-menu {
+        max-width: 100%;
+    }
+
+    .storefront-account-nav {
+        flex-direction: row;
+    }
+
+    .storefront-search {
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .container,
+    .container-fluid {
+        --bs-gutter-x: 1.5rem;
+    }
+
+    h1 { font-size: clamp(1.75rem, 8vw, 2.5rem); }
+    h2 { font-size: clamp(1.5rem, 7vw, 2rem); }
+    h3 { font-size: clamp(1.25rem, 6vw, 1.65rem); }
+
+    .product-detail-layout {
+        flex-direction: column !important;
+    }
+
+    .product-detail-media,
+    .product-detail-copy {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .product-detail-actions {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .product-detail-actions .btn {
+        width: 100%;
+        min-height: 44px;
+        margin-left: 0 !important;
+    }
+
+    .card-body-custom,
+    .card-header-custom,
+    .card-footer-custom {
+        padding: 1rem !important;
+    }
+
+    .responsive-table-wrap .btn-sm {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 420px) {
+    .storefront-logo {
+        width: 84px;
+        height: 44px;
+    }
+
+    .book-catalog-card > a {
+        min-height: 230px;
+    }
+
+    .book-catalog-card .card-img-top {
+        height: 215px;
+    }
+
+    .storefront-search {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .storefront-search .form-control,
+    .storefront-search .btn {
+        width: 100%;
+        margin-right: 0 !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

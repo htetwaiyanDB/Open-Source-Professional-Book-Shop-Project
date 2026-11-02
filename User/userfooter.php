@@ -1,12 +1,6 @@
 <?php
 require_once dirname(__DIR__) . '/Admin/connect.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
 <style>
 footer{
     width: 100%;
@@ -15,19 +9,23 @@ footer{
 }
 
 footer .footer_main{
-    width: 100%;
+    width: min(100% - 32px, 1240px);
+    margin: 0 auto;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-around;
+    gap: 24px;
 }
 
 footer .footer_main .tag{
     margin: 10px 0;
+    min-width: 0;
 }
 
 footer .footer_main .tag img{
-    width: 300px;
+    width: min(300px, 100%);
     margin-bottom: 10px;
-    margin-left :40px;
+    margin-left: 0;
 }
 
 footer .footer_main .tag h2,h4 {
@@ -35,7 +33,7 @@ footer .footer_main .tag h2,h4 {
 }
 
 footer .footer_main .tag p{
-    width: 250px;
+    width: min(250px, 100%);
     line-height: 22px;
     text-align: justify;
 }
@@ -89,16 +87,56 @@ footer .footer_main .tag .search_bar button{
     color: #fff;
     cursor: pointer;
 }
+
+footer .social_link {
+    display: flex;
+    gap: 8px;
+}
+
+footer .social_link a {
+    display: inline-flex !important;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 !important;
+    border-radius: 50%;
+}
+
+@media (max-width: 767.98px) {
+    footer .footer_main {
+        width: calc(100% - 32px);
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        justify-content: stretch;
+    }
+
+    footer .footer_main .tag:first-child {
+        grid-column: 1 / -1;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    footer .footer_main {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    footer .footer_main .tag:first-child {
+        grid-column: auto;
+    }
+
+    footer .footer_main .tag h1 {
+        margin-block: 16px 10px;
+    }
+}
 </style>
-    <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
-    <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
-</head>
-<body>
 <footer>
     <div class="footer_main">
   
         <div class="tag">
-            <img src="../Photos/logo4.png">
+            <img src="../Photos/logo4.png" alt="Book Palace">
             
         </div>
   
@@ -134,7 +172,3 @@ footer .footer_main .tag .search_bar button{
     </div>
 
   </footer>
-
-  
-</body>
-</html>

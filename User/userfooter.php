@@ -89,19 +89,6 @@ footer .footer_main .tag .search_bar button{
     color: #fff;
     cursor: pointer;
 }
-
-footer .end{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    color: #000;
-}
-
-footer .end span{
-    color: #089da1;
-    margin-left: 10px;
-}
 </style>
     <link rel="stylesheet" href="../assets/css/page-transitions.css?v=20261101-smooth2">
     <script defer src="../assets/js/page-transitions.js?v=20261101-smooth2"></script>
@@ -145,9 +132,7 @@ footer .end span{
         </div>        
         
     </div>
-  
-    <p class="end">Design By<span><i class="fa-solid fa-face-grin"></i> Group 1</span></p>
-  
+
   </footer>
 
   

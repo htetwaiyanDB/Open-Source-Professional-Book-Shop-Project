@@ -180,8 +180,6 @@ id amet eos repellat corrupti harum consectetur, dolorum dolore blanditiis quam 
 
 </div>
 
-<p class="end">Design By<span><i class="fa-solid fa-face-grin"></i> Group 1</span></p>
-
 </footer>
 </body>
 </html>
